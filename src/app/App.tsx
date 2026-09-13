@@ -9,7 +9,6 @@ import { MainMenu } from '../screens/MainMenu'
 import { Profile } from '../screens/Profile'
 import { Journey } from '../screens/Journey'
 import { Quests } from '../screens/Quests'
-import { QuestDetail } from '../screens/QuestDetail'
 import { Abilities } from '../screens/Abilities'
 import { Chronicle } from '../screens/Chronicle'
 import { Research } from '../screens/Research'
@@ -19,7 +18,7 @@ import { Settings } from '../screens/Settings'
 
 function Screens() {
   const { route } = useNav()
-  const key = route.screen === 'quest' ? `quest:${route.id}` : route.screen
+  const key = route.screen === 'quest' ? 'quests' : route.screen
 
   let el: JSX.Element
   switch (route.screen) {
@@ -39,7 +38,7 @@ function Screens() {
       el = <Quests />
       break
     case 'quest':
-      el = <QuestDetail id={route.id!} />
+      el = <Quests initialId={route.id} />
       break
     case 'abilities':
       el = <Abilities />
