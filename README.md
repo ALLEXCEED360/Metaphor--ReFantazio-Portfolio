@@ -1,4 +1,4 @@
-# Aryan Alam — Portfolio
+# Fardeen Alam — Portfolio
 
 A game-like portfolio inspired by the visual language of *Metaphor: ReFantazio*.
 

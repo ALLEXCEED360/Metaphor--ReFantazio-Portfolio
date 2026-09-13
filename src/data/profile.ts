@@ -1,6 +1,6 @@
 export const profile = {
-  name: 'Aryan Alam',
-  first: 'Aryan',
+  name: 'Fardeen Alam',
+  first: 'Fardeen',
   last: 'Alam',
   titles: ['Software Engineer', 'Game Developer'],
   class: 'Software Engineer',

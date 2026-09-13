@@ -48,10 +48,11 @@ export function Boot() {
         art={7}
         mobileArt={1}
         focus="center"
-        dim={0.5}
+        dim={0.55}
         position="70% center"
         video="/video/boot-loop.mp4"
         poster="/video/boot-poster.jpg"
+        videoDelay={reducedMotion ? 0 : 3300}
       />
 
       <motion.div

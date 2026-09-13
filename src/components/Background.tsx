@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useIsMobile } from '../hooks/useMedia'
 import { useSettings } from '../app/settings'
@@ -20,6 +20,8 @@ export interface BackgroundProps {
   /** optional muted video loop layered over the art (public/video/*.mp4) */
   video?: string
   poster?: string
+  /** ms to hold the still art before the video starts and fades in */
+  videoDelay?: number
 }
 
 export function artUrl(n: number) {
@@ -38,12 +40,34 @@ export function Background({
   position = 'center',
   video,
   poster,
+  videoDelay = 0,
 }: BackgroundProps) {
   const isMobile = useIsMobile()
   const { settings, reducedMotion } = useSettings()
   const showArt = settings.theme === 'original'
   const [videoReady, setVideoReady] = useState(false)
   const showVideo = showArt && !!video && !reducedMotion
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  // hold on the still art, then start the loop from frame 0 and fade it in
+  useEffect(() => {
+    if (!showVideo) return
+    const t = window.setTimeout(() => {
+      const v = videoRef.current
+      if (!v) return
+      const start = () => {
+        v.currentTime = 0
+        v.play()
+          .then(() => setVideoReady(true))
+          .catch(() => {
+            /* autoplay blocked — the still art simply stays */
+          })
+      }
+      if (v.readyState >= 2) start()
+      else v.addEventListener('loadeddata', start, { once: true })
+    }, videoDelay)
+    return () => clearTimeout(t)
+  }, [showVideo, videoDelay])
 
   const src = isMobile && mobileArt ? charaUrl(mobileArt) : art ? artUrl(art) : null
 
@@ -64,15 +88,14 @@ export function Background({
       </AnimatePresence>
       {showVideo && (
         <video
+          ref={videoRef}
           className={`bg__video ${videoReady ? 'is-ready' : ''}`}
           src={video}
           poster={poster}
-          autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          onPlaying={() => setVideoReady(true)}
           style={{ objectPosition: position }}
         />
       )}

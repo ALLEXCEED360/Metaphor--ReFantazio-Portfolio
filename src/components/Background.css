@@ -22,7 +22,7 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 2s ease;
   filter: saturate(0.9) contrast(1.05);
 }
 .bg__video.is-ready {
