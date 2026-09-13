@@ -62,7 +62,7 @@ export function Abilities() {
               aria-selected={arch === i}
               className={`arche__tab t-ui-bold ${arch === i ? 'is-active' : ''}`}
               onClick={() => setArch(i)}
-              onPointerEnter={() => setArch(i)}
+              onPointerMove={() => setArch(i)}
             >
               <Splat color="var(--red)" seed={i + 2} />
               <span>{x.title}</span>

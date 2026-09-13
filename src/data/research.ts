@@ -1,7 +1,8 @@
 export const research = {
   id: 'cat-cot',
   title: 'CAT-CoT',
-  subtitle: 'Context-Aware Thought Chain for Empathetic Dialogue',
+  subtitle:
+    'Instruction-Tuning LLMs via Cognitive Appraisal Theory-Inspired Chain-of-Thought Reasoning to Enhance Emotional Expressivity',
   areas: ['Natural Language Processing', 'Large Language Models', 'Empathetic Dialogue'],
   dataset: { name: 'EmpatheticDialogues', from: '24,850', to: '16,789', unit: 'samples' },
   status: 'Under Review',

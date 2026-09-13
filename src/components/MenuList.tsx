@@ -75,7 +75,7 @@ export function MenuList({
           <button
             role="menuitem"
             className={`mitem ${cur === i ? 'is-active' : ''}`}
-            onPointerEnter={() => set(i)}
+            onPointerMove={() => set(i)}
             onFocus={() => set(i)}
             onClick={() => {
               set(i)

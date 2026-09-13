@@ -39,7 +39,7 @@ export function Chronicle() {
                   setIndex(i)
                   setOpen(isOpen ? null : x.id)
                 }}
-                onPointerEnter={() => setIndex(i)}
+                onPointerMove={() => setIndex(i)}
                 aria-expanded={isOpen}
               >
                 <span className="chron__year t-num">{x.year}</span>
