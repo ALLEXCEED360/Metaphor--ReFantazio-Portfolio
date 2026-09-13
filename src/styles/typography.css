@@ -1,0 +1,92 @@
+/* ─────────────────────────────────────────────────────────
+   TYPOGRAPHY
+   Display  — Bodoni Moda 900, extended (Metaphor's fat-face headers)
+   UI       — Noto Serif Display, condensed (Metaphor's menu serif)
+   Mono     — IBM Plex Mono (technical metadata)
+   ───────────────────────────────────────────────────────── */
+
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 96;
+  font-stretch: normal;
+  letter-spacing: 0.01em;
+  line-height: 0.82;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+/* Giant screen title that bleeds off the top-left like the game */
+.t-hero {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 96;
+  font-stretch: normal;
+  text-transform: uppercase;
+  line-height: 0.78;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+  display: inline-block;
+  transform: scaleX(1.32);
+  transform-origin: left top;
+  white-space: nowrap;
+}
+
+.t-ui {
+  font-family: var(--font-ui);
+  font-stretch: var(--ui-stretch);
+  font-weight: 500;
+}
+
+.t-ui-bold {
+  font-family: var(--font-ui);
+  font-stretch: var(--ui-stretch);
+  font-weight: 700;
+}
+
+/* "LEADER" / "PARTY" style label — big initial cap, small caps rest */
+.t-label {
+  font-family: var(--font-ui);
+  font-stretch: var(--ui-stretch);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.t-label::first-letter {
+  font-size: 1.45em;
+  letter-spacing: 0.08em;
+}
+
+.t-mono {
+  font-family: var(--font-mono);
+  font-stretch: normal;
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.t-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: 'opsz' 60;
+  font-stretch: normal;
+  letter-spacing: -0.02em;
+}
+
+.t-body {
+  font-family: var(--font-ui);
+  font-stretch: 80%;
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.t-quote {
+  font-family: var(--font-ui);
+  font-stretch: 80%;
+  font-style: italic;
+  font-weight: 400;
+}

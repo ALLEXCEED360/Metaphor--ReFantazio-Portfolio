@@ -1,0 +1,122 @@
+.menu {
+  z-index: 1;
+}
+
+.menu__head {
+  padding: calc(var(--safe-top) + 26px) var(--gutter) 0;
+  pointer-events: none;
+}
+
+.menu__name {
+  display: flex;
+  gap: 0.28em;
+  align-items: baseline;
+  line-height: 0.8;
+  transform: scaleX(1.3);
+  transform-origin: left center;
+  width: max-content;
+}
+.menu__name-word {
+  font-size: clamp(40px, 5.6vw, 88px);
+}
+.menu__name-word--last {
+  color: var(--red-hot);
+}
+
+.menu__titles {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.menu__body {
+  display: grid;
+  grid-template-columns: minmax(280px, 520px) 1fr;
+  align-items: center;
+  gap: 40px;
+  padding-top: 8px;
+}
+
+.menu__nav {
+  width: 100%;
+}
+
+.menu__side {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  pointer-events: none;
+  min-width: 0;
+}
+.menu__side-word {
+  font-size: clamp(56px, 9vw, 150px);
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line);
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: clip;
+}
+.menu__side-hint {
+  margin-top: 12px;
+  color: var(--fg-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.menu__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px var(--gutter) calc(var(--safe-bottom) + 12px);
+  pointer-events: none;
+}
+.menu__loc {
+  color: var(--fg-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 960px) {
+  .menu__side-word {
+    font-size: clamp(48px, 8vw, 110px);
+  }
+}
+
+@media (max-width: 760px) {
+  .menu__head {
+    text-align: center;
+  }
+  .menu__name {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: auto;
+    transform: scaleX(1.15);
+    transform-origin: center;
+  }
+  .menu__name-word {
+    font-size: clamp(48px, 15vw, 80px);
+  }
+  .menu__body {
+    grid-template-columns: 1fr;
+    gap: 0;
+    align-items: start;
+    padding-top: 22px;
+  }
+  .menu__side {
+    display: none;
+  }
+  .menu__foot {
+    justify-content: center;
+  }
+  .menu__loc {
+    display: none;
+  }
+}

@@ -1,0 +1,56 @@
+/* ─────────────────────────────────────────────────────────
+   DESIGN TOKENS — palette lifted from Metaphor: ReFantazio
+   ink / cream / crimson / teal / gold
+   ───────────────────────────────────────────────────────── */
+:root {
+  /* Palette */
+  --ink: #0a0909;
+  --ink-2: #161313;
+  --char: #221d1d;
+  --cream: #f2ead9;
+  --cream-2: #e4d9c0;
+  --paper: #d9cdb0;
+  --red: #c91f2e;
+  --red-deep: #8a1220;
+  --red-hot: #ee2f3f;
+  --teal: #1e8f95;
+  --teal-deep: #10585c;
+  --blue: #2b6c9c;
+  --gold: #c9a24a;
+  --gold-deep: #8d6e2a;
+
+  /* Semantic */
+  --bg: var(--ink);
+  --fg: var(--cream);
+  --fg-dim: rgba(242, 234, 217, 0.62);
+  --fg-faint: rgba(242, 234, 217, 0.32);
+  --line: rgba(242, 234, 217, 0.55);
+  --line-faint: rgba(242, 234, 217, 0.18);
+  --accent: var(--red);
+  --accent-2: var(--teal);
+
+  /* Type */
+  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif;
+  --font-ui: 'Noto Serif Display', 'Times New Roman', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  --ui-stretch: 72%;
+
+  /* Spacing / layout */
+  --gutter: clamp(20px, 4vw, 64px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.1, 1);
+  --dur-fast: 160ms;
+  --dur: 320ms;
+  --dur-slow: 640ms;
+}
+
+[data-motion='reduced'] {
+  --dur-fast: 0ms;
+  --dur: 0ms;
+  --dur-slow: 0ms;
+}

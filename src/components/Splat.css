@@ -1,0 +1,15 @@
+.splat {
+  position: absolute;
+  inset: -38% -6% -30% -4%;
+  width: 110%;
+  height: 168%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+.flick {
+  display: block;
+  height: 0.5em;
+  width: auto;
+}

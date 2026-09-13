@@ -1,0 +1,41 @@
+.wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.wipe__slab {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -15%;
+  width: 135%;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.wipe__slab--red {
+  background: var(--red);
+  clip-path: polygon(0 0, 92% 0, 100% 100%, 6% 100%);
+}
+.wipe__slab--ink {
+  background: var(--ink);
+  clip-path: polygon(0 0, 88% 0, 97% 100%, 3% 100%);
+}
+.wipe__slab--cream {
+  background: var(--cream);
+  clip-path: polygon(0 0, 95% 0, 100% 100%, 8% 100%);
+}
+
+.wipe__word {
+  position: relative;
+  z-index: 4;
+  font-size: clamp(72px, 16vw, 260px);
+  color: var(--cream);
+  transform-origin: center;
+  text-shadow: 0.02em 0.02em 0 var(--red);
+}
