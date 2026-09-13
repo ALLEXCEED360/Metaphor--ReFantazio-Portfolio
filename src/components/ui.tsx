@@ -26,12 +26,51 @@ export function Hints({ hints }: { hints?: Hint[] }) {
     <div className="hints" aria-hidden="true">
       {list.map((h) => (
         <span className="hint" key={h.key + h.label}>
-          <kbd className="hint__key t-mono">{h.key}</kbd>
+          <kbd className="hint__key t-mono">
+            <KeyGlyph k={h.key} />
+          </kbd>
           <span className="hint__label t-ui">{h.label}</span>
         </span>
       ))}
     </div>
   )
+}
+
+/** the fonts lack clean arrow glyphs, so common keys get small SVG icons */
+function KeyGlyph({ k }: { k: string }) {
+  const common = { width: 12, height: 12, viewBox: '0 0 12 12', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  switch (k) {
+    case '↕':
+    case '↑↓':
+      return (
+        <svg {...common}>
+          <path d="M6 1.5v9M3.2 4.2 6 1.5l2.8 2.7M3.2 7.8 6 10.5l2.8-2.7" />
+        </svg>
+      )
+    case '↔':
+    case '← →':
+      return (
+        <svg {...common}>
+          <path d="M1.5 6h9M4.2 3.2 1.5 6l2.7 2.8M7.8 3.2 10.5 6 7.8 8.8" />
+        </svg>
+      )
+    case '⌫':
+    case 'Esc':
+      return (
+        <svg {...common}>
+          <path d="M4.2 2.5h6.3v7H4.2L1.5 6l2.7-3.5ZM6 4.5l3 3M9 4.5l-3 3" />
+        </svg>
+      )
+    case '↵':
+    case 'Enter':
+      return (
+        <svg {...common}>
+          <path d="M10.5 2v4.2H2.5M5 3.8 2.5 6.2 5 8.6" />
+        </svg>
+      )
+    default:
+      return <>{k}</>
+  }
 }
 
 /* ── Back button (top-right, "◁ Back") ──────────────────────────────────── */

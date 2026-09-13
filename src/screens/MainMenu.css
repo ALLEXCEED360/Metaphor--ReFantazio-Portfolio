@@ -1,122 +1,240 @@
+/* ─────────────────────────────────────────────────────────
+   MAIN MENU — the game's pause menu: a wheel of fat-face words over the
+   painted plate, per-row splat colour, giant slot number + vertical name
+   in the corner, stats block bottom-right.
+   ───────────────────────────────────────────────────────── */
+
 .menu {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  background: var(--ink);
+  --paint: #f14352;
+}
+
+/* ── backdrop (clean plate: paint + portrait, no game text) ───────────── */
+
+.menu__bg {
+  position: absolute;
+  inset: 0;
+  background: var(--ink) url('/art/menu-bg.jpg') left center / cover no-repeat;
+  pointer-events: none;
+}
+.menu__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(270deg, rgba(10, 9, 9, 0.5) 0%, rgba(10, 9, 9, 0) 18%),
+    linear-gradient(0deg, rgba(10, 9, 9, 0.45) 0%, rgba(10, 9, 9, 0) 22%);
+}
+.menu__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
+/* ── the wheel (design space, scaled like cover) ──────────────────────── */
+
+.menu__wheel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.wheel__splat {
+  position: absolute;
+  width: 2400px;
+  transform-origin: 100% 50%;
+  pointer-events: none;
   z-index: 1;
 }
-
-.menu__head {
-  padding: calc(var(--safe-top) + 26px) var(--gutter) 0;
-  pointer-events: none;
-}
-
-.menu__name {
-  display: flex;
-  gap: 0.28em;
-  align-items: baseline;
-  line-height: 0.8;
-  transform: scaleX(1.3);
-  transform-origin: left center;
-  width: max-content;
-}
-.menu__name-word {
-  font-size: clamp(40px, 5.6vw, 88px);
-}
-.menu__name-word--last {
-  color: var(--red-hot);
-}
-
-.menu__titles {
-  margin-top: 10px;
-  font-size: 0.85rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
-}
-
-.menu__body {
-  display: grid;
-  grid-template-columns: minmax(280px, 520px) 1fr;
-  align-items: center;
-  gap: 40px;
-  padding-top: 8px;
-}
-
-.menu__nav {
+.wheel__splat svg {
+  display: block;
   width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.menu__side {
-  position: relative;
+.wheel__item {
+  position: absolute;
+  z-index: 2;
+  transform-origin: 100% 72%;
+  /* fat-face: heavy stems, hairline serifs — the game's lettering */
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 96;
+  font-stretch: normal;
+  text-transform: uppercase;
+  line-height: 0.78;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  color: var(--cream);
+  text-shadow: 0.055em 0.055em 0 var(--ink);
+  -webkit-text-stroke: 0.02em currentColor;
+  paint-order: stroke fill;
+  padding: 0.06em 0.1em 0.02em 0.06em;
+  cursor: pointer;
+  transition: color var(--dur-fast);
+}
+.wheel__word {
+  display: inline-flex;
+  align-items: baseline;
+  /* the game's letters are ~2.3× taller than wide */
+  transform: scaleX(0.72);
+  transform-origin: 100% 50%;
+}
+.wheel__word > span {
+  display: inline-block;
+  line-height: 0.78;
+}
+.wheel__item.is-active {
+  z-index: 3;
+  color: var(--ink);
+  text-shadow: 0.045em 0.045em 0 var(--cream);
+}
+
+.wheel__hint {
+  position: absolute;
+  right: 0.12em;
+  bottom: -0.56em;
+  z-index: 4;
+  font-family: var(--font-ui);
+  font-stretch: var(--ui-stretch);
+  font-weight: 700;
+  font-size: 0.2em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream);
+  text-shadow: none;
+  background: var(--ink);
+  padding: 0.3em 0.9em 0.28em;
+  clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+  white-space: nowrap;
+}
+
+/* ── corner: giant number + vertical name ─────────────────────────────── */
+
+.menu__corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+.menu__num {
+  position: absolute;
+  top: 0.04em;
+  right: 0.02em;
+  font-size: 24vh;
+  line-height: 1;
+  color: var(--cream);
+  opacity: 0.96;
+  /* text optical size (not display) keeps Bodoni's hairlines a touch heavier */
+  font-variation-settings: 'opsz' 36;
+  /* a soft dark halo so the hairline diagonal of 4 / 7 has contrast */
+  filter: drop-shadow(0 0 10px rgba(10, 9, 9, 0.75));
+  text-shadow: 0.03em 0.03em 0 var(--paint);
+  transition: text-shadow var(--dur-slow) ease;
+  animation: num-in 0.28s var(--ease-out);
+}
+@keyframes num-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+.menu__vname {
+  position: absolute;
+  top: 30vh;
+  right: 1.2vw;
+  writing-mode: vertical-rl;
+  font-size: clamp(1.3rem, 2.4vw, 2.3rem);
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: var(--cream);
+  text-shadow: 0.06em 0.06em 0 var(--paint);
+  transition: text-shadow var(--dur-slow) ease;
+}
+
+/* ── stats block (bottom right) ───────────────────────────────────────── */
+
+.menu__stats {
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--safe-bottom) + 64px);
+  width: clamp(240px, 24vw, 380px);
+  padding: 14px var(--gutter) 10px 22px;
+  background: linear-gradient(270deg, rgba(10, 9, 9, 0.85), rgba(10, 9, 9, 0));
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  gap: 8px;
+  z-index: 4;
+}
+.menu__stat {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 6px 0 8px 40px;
+  border-bottom: 1px solid var(--line);
+}
+.menu__stat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 30px;
+  height: 1px;
+  background: var(--paint);
+  transition: background-color var(--dur-slow) ease;
+}
+.menu__stat-label {
+  font-size: 0.62rem;
+}
+.menu__stat-value {
+  font-size: clamp(1.05rem, 1.5vw, 1.4rem);
+  line-height: 1.1;
   text-align: right;
-  pointer-events: none;
-  min-width: 0;
-}
-.menu__side-word {
-  font-size: clamp(56px, 9vw, 150px);
-  color: transparent;
-  -webkit-text-stroke: 1px var(--line);
-  opacity: 0.7;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 100%;
-  text-overflow: clip;
-}
-.menu__side-hint {
-  margin-top: 12px;
-  color: var(--fg-dim);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .menu__foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: absolute;
+  right: 0;
+  bottom: 0;
   padding: 10px var(--gutter) calc(var(--safe-bottom) + 12px);
   pointer-events: none;
-}
-.menu__loc {
-  color: var(--fg-dim);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  z-index: 4;
 }
 
-@media (max-width: 960px) {
-  .menu__side-word {
-    font-size: clamp(48px, 8vw, 110px);
-  }
-}
+/* ── mobile: the plate is cropped to the face; the wheel is scaled the
+      same way so the words still sit on the paint ─────────────────────── */
 
 @media (max-width: 760px) {
-  .menu__head {
-    text-align: center;
+  .menu__num {
+    font-size: 15vh;
+    right: 3vw;
+    top: -0.06em;
   }
-  .menu__name {
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    width: auto;
-    transform: scaleX(1.15);
-    transform-origin: center;
+  .menu__vname {
+    top: 18vh;
+    right: 3.5vw;
+    font-size: 0.75rem;
   }
-  .menu__name-word {
-    font-size: clamp(48px, 15vw, 80px);
-  }
-  .menu__body {
-    grid-template-columns: 1fr;
-    gap: 0;
-    align-items: start;
-    padding-top: 22px;
-  }
-  .menu__side {
+  .menu__stats {
     display: none;
   }
-  .menu__foot {
-    justify-content: center;
+  .menu--mobile .menu__bg {
+    background-position: 68% center;
   }
-  .menu__loc {
-    display: none;
+  .menu--mobile .wheel__splat {
+    width: 140vw;
   }
 }
