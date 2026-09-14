@@ -3,6 +3,8 @@ import { motion } from 'framer-motion'
 import { Background } from '../components/Background'
 import { Flick } from '../components/Splat'
 import { useNav } from '../app/router'
+import { sfx } from '../app/audio'
+import { startMusic } from '../app/music'
 import { useSettings } from '../app/settings'
 import { useIsMobile } from '../hooks/useMedia'
 import { profile } from '../data/profile'
@@ -25,7 +27,11 @@ export function Boot() {
 
   useEffect(() => {
     if (!armed) return
-    const start = () => go('/menu', { word: 'Begin' })
+    const start = () => {
+      sfx.begin()
+      startMusic()
+      go('/menu', { word: 'Begin' })
+    }
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return
       if (e.key === 'F5' || e.key === 'F12' || e.key === 'Tab') return

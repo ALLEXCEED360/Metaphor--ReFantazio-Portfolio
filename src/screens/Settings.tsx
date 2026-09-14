@@ -1,109 +1,293 @@
-import { motion } from 'framer-motion'
+import { useCallback, useEffect, useState, type CSSProperties } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Background } from '../components/Background'
 import { ScreenTitle } from '../components/ScreenTitle'
 import { Splat } from '../components/Splat'
-import { Screen } from '../components/ui'
-import { useBackKey } from '../hooks/useKeyNav'
+import { KeyGlyph, Screen } from '../components/ui'
 import { useNav } from '../app/router'
 import { useSettings, type Settings as S } from '../app/settings'
 import { useFinePointer } from '../hooks/useMedia'
-import './screens.css'
+import { sfx } from '../app/audio'
+import './Settings.css'
 
-interface Row<K extends keyof S> {
+const ease = [0.16, 1, 0.3, 1] as const
+
+interface Option<K extends keyof S> {
+  value: S[K]
+  label: string
+  note: string
+}
+interface Row<K extends keyof S = keyof S> {
   key: K
   label: string
   desc: string
-  options: { value: S[K]; label: string }[]
-  disabled?: boolean
+  paint: string
+  options: Option<K>[]
+  disabled?: string
 }
 
-export function Settings() {
-  const { back } = useNav()
-  const { settings, set, reducedMotion } = useSettings()
-  const fine = useFinePointer()
-  useBackKey(back)
+const controls = [
+  { k: '↕', label: 'Move', desc: 'Step through lists, rows and records' },
+  { k: '↔', label: 'Turn', desc: 'Change a value, turn a page or a wheel' },
+  { k: '↵', label: 'Confirm', desc: 'Open the chosen item or link' },
+  { k: '⌫', label: 'Back', desc: 'Return to the menu; from the menu, to the title' },
+  { k: 'Tab', label: 'Filter', desc: 'Cycle collections in the creative archive' },
+  { k: 'Mouse', label: 'Hover', desc: 'Pointing selects, clicking confirms' },
+]
 
-  const rows: Row<keyof S>[] = [
+/* ─────────────────────────────────────────────────────────
+   SETTINGS — option slabs on the left (↑/↓ chooses a row, ←/→ changes it),
+   the controls legend and a live motion preview on the right.
+   ───────────────────────────────────────────────────────── */
+
+export function Settings() {
+  const { go } = useNav()
+  const { settings, set, reset, reducedMotion } = useSettings()
+  const fine = useFinePointer()
+
+  const rows: Row[] = [
     {
       key: 'motion',
       label: 'Animation',
-      desc: 'Reduced keeps the layout, drops the big transitions.',
+      desc: 'The big wipes, the sliding strokes and the looping video.',
+      paint: '#f14352',
       options: [
-        { value: 'full', label: 'Full' },
-        { value: 'reduced', label: 'Reduced' },
-      ],
-    },
-    {
-      key: 'theme',
-      label: 'Theme',
-      desc: 'Original uses the artwork backdrops. Dark is pure ink.',
-      options: [
-        { value: 'original', label: 'Original' },
-        { value: 'dark', label: 'Dark' },
+        { value: 'full', label: 'Full', note: 'Everything moves' },
+        { value: 'reduced', label: 'Reduced', note: 'Fades only, no video' },
       ],
     },
     {
       key: 'cursor',
       label: 'Cursor',
-      desc: fine ? 'Custom diamond cursor on desktop.' : 'Only available with a mouse or trackpad.',
+      desc: 'The diamond pointer used across the site.',
+      paint: '#d4a900',
       options: [
-        { value: 'custom', label: 'Custom' },
-        { value: 'default', label: 'Default' },
+        { value: 'custom', label: 'Diamond', note: 'The site pointer' },
+        { value: 'default', label: 'System', note: 'Your usual arrow' },
       ],
-      disabled: !fine,
+      disabled: fine ? undefined : 'Only with a mouse or trackpad',
+    },
+    {
+      key: 'music',
+      label: 'Music',
+      desc: 'The main menu theme, streamed from YouTube. Starts after your first key press.',
+      paint: '#b94abb',
+      options: [
+        { value: 'on', label: 'On', note: 'Looping quietly' },
+        { value: 'off', label: 'Off', note: 'Silent' },
+      ],
     },
     {
       key: 'sound',
       label: 'Sound',
-      desc: 'Menu and transition sounds. Coming soon — off by default.',
+      desc: 'Cursor ticks, confirms and the swell under the page wipes.',
+      paint: '#3a96aa',
       options: [
-        { value: 'off', label: 'Off' },
-        { value: 'on', label: 'On' },
+        { value: 'on', label: 'On', note: 'With sound' },
+        { value: 'off', label: 'Off', note: 'Silent' },
       ],
-      disabled: true,
     },
   ]
+  const ACTIONS = rows.length // index of the actions row (reset / clear)
+  const count = rows.length + 1
+
+  const [index, setIndex] = useState(0)
+  const change = useCallback(
+    (dir: 1 | -1) => {
+      const r = rows[index]
+      if (!r || r.disabled) return
+      const k = r.options.findIndex((o) => o.value === settings[r.key])
+      const next = r.options[(k + dir + r.options.length) % r.options.length]
+      set(r.key, next.value)
+      // the flag flips after render, so let the confirmation land a beat later
+      window.setTimeout(() => sfx.toggle(), 40)
+    },
+    [index, rows, settings, set],
+  )
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault()
+          setIndex((i) => {
+            const n = Math.min(count - 1, i + 1)
+            if (n !== i) sfx.tick()
+            return n
+          })
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          setIndex((i) => {
+            const n = Math.max(0, i - 1)
+            if (n !== i) sfx.tick()
+            return n
+          })
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          change(1)
+          break
+        case 'ArrowLeft':
+          e.preventDefault()
+          change(-1)
+          break
+        case 'Enter':
+        case ' ':
+          e.preventDefault()
+          if (index === ACTIONS) {
+            sfx.confirm()
+            reset()
+          } else change(1)
+          break
+        case 'Escape':
+        case 'Backspace':
+          e.preventDefault()
+          sfx.back()
+          go('/menu')
+          break
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [change, count, index, ACTIONS, reset, go])
+
+  const rise = (k: number) => ({
+    initial: reducedMotion ? false : { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    transition: { delay: 0.1 + k * 0.07, duration: 0.4, ease },
+  })
 
   return (
-    <Screen head={<ScreenTitle sub="Motion, theme, cursor">Settings</ScreenTitle>} hints={[{ key: 'Esc', label: 'Back' }]}>
-      <Background art={12} mobileArt={4} focus="left" dim={0.55} />
-      <div className="set">
-        {rows.map((r, i) => (
-          <motion.div
-            key={r.key}
-            className="set__row"
-            initial={reducedMotion ? false : { opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.12 + i * 0.07, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            style={r.disabled ? { opacity: 0.5 } : undefined}
-          >
-            <div>
-              <div className="set__label t-ui-bold">{r.label}</div>
-              <div className="set__desc t-ui">{r.desc}</div>
+    <Screen
+      head={<ScreenTitle sub="Saved in this browser">Settings</ScreenTitle>}
+      hints={[
+        { key: '↕', label: 'Option' },
+        { key: '↔', label: 'Change' },
+        { key: '⌫', label: 'Back' },
+      ]}
+      onBack={() => go('/menu')}
+      className="settings"
+    >
+      <Background art={12} mobileArt={4} focus="center" dim={0.8} position="center 40%" />
+
+      <div className="st">
+        {/* ── options ──────────────────────────────────────────────────── */}
+        <div className="st__rows">
+          {rows.map((r, i) => {
+            const on = i === index
+            const current = r.options.find((o) => o.value === settings[r.key])
+            return (
+              <motion.section
+                key={r.key}
+                className={`opt ${on ? 'is-active' : ''} ${r.disabled ? 'is-disabled' : ''}`}
+                style={{ '--col': r.paint } as CSSProperties}
+                onPointerMove={() => setIndex((cur) => (cur === i ? cur : (sfx.tick(), i)))}
+                {...rise(i)}
+              >
+                <span className="opt__num t-num">{String(i + 1).padStart(2, '0')}</span>
+                <div className="opt__text">
+                  <h3 className="opt__label">{r.label}</h3>
+                  <p className="opt__desc t-ui">{r.disabled ?? r.desc}</p>
+                </div>
+                <div className="opt__seg" role="radiogroup" aria-label={r.label}>
+                  {r.options.map((o) => {
+                    const active = o.value === settings[r.key]
+                    return (
+                      <button
+                        key={String(o.value)}
+                        role="radio"
+                        aria-checked={active}
+                        disabled={!!r.disabled}
+                        className={`seg ${active ? 'is-on' : ''}`}
+                        onClick={() => {
+                          setIndex(i)
+                          set(r.key, o.value)
+                          window.setTimeout(() => sfx.toggle(), 40)
+                        }}
+                      >
+                        {active && (
+                          <motion.span layoutId={`st-seg-${r.key}`} className="seg__mark" aria-hidden="true" transition={{ duration: reducedMotion ? 0 : 0.28, ease }}>
+                            <Splat color={r.paint} seed={i + 7} />
+                          </motion.span>
+                        )}
+                        <span className="seg__label">{o.label}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+                <span className="opt__note t-mono">{current?.note}</span>
+              </motion.section>
+            )
+          })}
+
+          {/* actions */}
+          <motion.section className={`opt opt--actions ${index === ACTIONS ? 'is-active' : ''}`} onPointerMove={() => setIndex((cur) => (cur === ACTIONS ? cur : (sfx.tick(), ACTIONS)))} {...rise(rows.length)}>
+            <span className="opt__num t-num">{String(rows.length + 1).padStart(2, '0')}</span>
+            <div className="opt__text">
+              <h3 className="opt__label">Memory</h3>
+              <p className="opt__desc t-ui">Choices live in this browser only.</p>
             </div>
-            <div className="set__opts" role="radiogroup" aria-label={r.label}>
-              {r.options.map((o) => {
-                const active = settings[r.key] === o.value
-                return (
-                  <button
-                    key={String(o.value)}
-                    role="radio"
-                    aria-checked={active}
-                    disabled={r.disabled}
-                    className={`set__opt t-ui-bold ${active ? 'is-active' : ''}`}
-                    onClick={() => set(r.key, o.value)}
-                  >
-                    <Splat color="var(--red)" seed={i + 4} />
-                    <span>{o.label}</span>
-                  </button>
-                )
-              })}
+            <div className="opt__seg">
+              <button
+                className="seg seg--plain"
+                onClick={() => {
+                  sfx.confirm()
+                  reset()
+                }}
+              >
+                <span className="seg__label">Restore defaults</span>
+              </button>
             </div>
-          </motion.div>
-        ))}
-        <p className="set__note t-ui">
-          Your choices are saved in this browser. Reduced motion is picked automatically when your system asks for it.
-        </p>
+          </motion.section>
+        </div>
+
+        {/* ── legend & preview ─────────────────────────────────────────── */}
+        <motion.aside className="st__side" {...rise(1)}>
+          <div className="preview" aria-hidden="true">
+            <span className="t-label">Preview</span>
+            <div className="preview__stage">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={settings.motion}
+                  className="preview__splat"
+                  initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scaleX: 0.4 }}
+                  animate={{ opacity: 1, scaleX: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reducedMotion ? 0.2 : 0.6, ease }}
+                >
+                  <Splat color="var(--red)" seed={9} />
+                </motion.span>
+              </AnimatePresence>
+              <motion.span
+                className="preview__word t-hero"
+                animate={reducedMotion ? { x: 0 } : { x: [0, 6, 0] }}
+                transition={reducedMotion ? { duration: 0 } : { duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {settings.motion === 'full' ? 'Full' : 'Still'}
+              </motion.span>
+              <span className={`preview__cursor ${settings.cursor === 'custom' && fine ? 'is-diamond' : ''}`} />
+            </div>
+            <span className="preview__caption t-mono">
+              {settings.motion === 'full' ? 'Wipes, strokes and video on' : 'Fades only'} · {settings.cursor === 'custom' && fine ? 'diamond cursor' : 'system cursor'}
+            </span>
+          </div>
+
+          <div className="legend">
+            <span className="t-label">Controls</span>
+            <ul>
+              {controls.map((c) => (
+                <li key={c.label} className="legend__row">
+                  <kbd className="legend__key t-mono">
+                    <KeyGlyph k={c.k} />
+                  </kbd>
+                  <span className="legend__label">{c.label}</span>
+                  <span className="legend__desc t-ui">{c.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.aside>
       </div>
     </Screen>
   )

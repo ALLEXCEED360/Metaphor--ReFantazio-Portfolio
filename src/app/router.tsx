@@ -1,3 +1,4 @@
+import { sfx } from './audio'
 import {
   createContext,
   useCallback,
@@ -140,6 +141,7 @@ export function RouterProvider({ children }: { children: ReactNode }) {
       }
 
       busyRef.current = true
+      if (opts.word !== 'Begin') sfx.wipe()
       setWipe({ word: opts.word, phase: 'cover' })
       timers.current.push(
         window.setTimeout(() => {

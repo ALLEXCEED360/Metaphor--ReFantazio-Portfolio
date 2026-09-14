@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { setSfxEnabled } from './audio'
 
 export interface Settings {
   motion: 'full' | 'reduced'
   cursor: 'custom' | 'default'
-  theme: 'original' | 'dark'
   sound: 'off' | 'on'
+  music: 'off' | 'on'
 }
 
-const KEY = 'aryan-portfolio:settings'
+const KEY = 'aryan-portfolio:settings:v2'
 
 function systemDefaults(): Settings {
   const prefersReduced =
@@ -16,8 +17,8 @@ function systemDefaults(): Settings {
   return {
     motion: prefersReduced ? 'reduced' : 'full',
     cursor: finePointer ? 'custom' : 'default',
-    theme: 'original',
-    sound: 'off',
+    sound: 'on',
+    music: 'on',
   }
 }
 
@@ -26,7 +27,9 @@ function load(): Settings {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return base
-    return { ...base, ...(JSON.parse(raw) as Partial<Settings>) }
+    const saved = JSON.parse(raw) as Partial<Settings> & { theme?: unknown }
+    delete saved.theme
+    return { ...base, ...saved }
   } catch {
     return base
   }
@@ -35,6 +38,7 @@ function load(): Settings {
 interface Ctx {
   settings: Settings
   set: <K extends keyof Settings>(key: K, value: Settings[K]) => void
+  reset: () => void
   reducedMotion: boolean
 }
 
@@ -51,7 +55,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }
     const root = document.documentElement
     root.dataset.motion = settings.motion
-    root.dataset.theme = settings.theme
+    setSfxEnabled(settings.sound === 'on')
+    delete root.dataset.theme
     // custom cursor only ever applies to fine pointers
     const fine = window.matchMedia('(pointer: fine)').matches
     document.body.dataset.cursor = fine ? settings.cursor : 'default'
@@ -61,6 +66,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     () => ({
       settings,
       set: (key, v) => setSettings((s) => ({ ...s, [key]: v })),
+      reset: () => setSettings(systemDefaults()),
       reducedMotion: settings.motion === 'reduced',
     }),
     [settings],

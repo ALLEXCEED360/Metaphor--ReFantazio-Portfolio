@@ -37,7 +37,7 @@ export function Hints({ hints }: { hints?: Hint[] }) {
 }
 
 /** the fonts lack clean arrow glyphs, so common keys get small SVG icons */
-function KeyGlyph({ k }: { k: string }) {
+export function KeyGlyph({ k }: { k: string }) {
   const common = { width: 12, height: 12, viewBox: '0 0 12 12', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
   switch (k) {
     case '↕':

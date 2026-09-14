@@ -43,10 +43,9 @@ export function Background({
   videoDelay = 0,
 }: BackgroundProps) {
   const isMobile = useIsMobile()
-  const { settings, reducedMotion } = useSettings()
-  const showArt = settings.theme === 'original'
+  const { reducedMotion } = useSettings()
   const [videoReady, setVideoReady] = useState(false)
-  const showVideo = showArt && !!video && !reducedMotion
+  const showVideo = !!video && !reducedMotion
   const videoRef = useRef<HTMLVideoElement>(null)
 
   // hold on the still art, then start the loop from frame 0 and fade it in
@@ -74,7 +73,7 @@ export function Background({
   return (
     <div className={`bg bg--${focus} bg--tint-${tint}`} aria-hidden="true">
       <AnimatePresence initial={false}>
-        {showArt && src && (
+        {src && (
           <motion.div
             key={src}
             className="bg__art"

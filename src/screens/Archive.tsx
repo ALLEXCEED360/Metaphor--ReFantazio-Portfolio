@@ -6,6 +6,7 @@ import { Splat } from '../components/Splat'
 import { GameButton, Screen, Tag } from '../components/ui'
 import { useNav } from '../app/router'
 import { useSettings } from '../app/settings'
+import { sfx } from '../app/audio'
 import { archive, collectionOf, collections, pieceUrl, type Collection } from '../data/archive'
 import './Archive.css'
 
@@ -42,9 +43,13 @@ export function Archive() {
   const pick = useCallback(
     (k: number) => {
       const target = shown[Math.max(0, Math.min(shown.length - 1, k))]
-      if (target) setIndex(archive.indexOf(target))
+      if (target) {
+        const i = archive.indexOf(target)
+        if (i !== index) sfx.tick()
+        setIndex(i)
+      }
     },
-    [shown],
+    [shown, index],
   )
   // when the filter changes, land on the first piece of that collection if the current one is hidden
   useEffect(() => {
@@ -75,17 +80,20 @@ export function Archive() {
           e.preventDefault()
           const order: Filter[] = ['all', ...collections.map((c) => c.id)]
           const k = order.indexOf(filter)
+          sfx.toggle()
           setFilter(order[(k + (e.shiftKey ? order.length - 1 : 1)) % order.length])
           break
         }
         case 'Enter':
         case ' ':
           e.preventDefault()
+          sfx.confirm()
           window.open(p.link, '_blank', 'noreferrer')
           break
         case 'Escape':
         case 'Backspace':
           e.preventDefault()
+          sfx.back()
           go('/menu')
           break
       }
@@ -124,7 +132,10 @@ export function Archive() {
         {/* ── catalogue ────────────────────────────────────────────────── */}
         <div className="arc__cat">
           <div className="arc__filters" role="tablist" aria-label="Collections">
-            <button className={`filt ${filter === 'all' ? 'is-active' : ''}`} style={{ '--col': 'var(--cream)' } as CSSProperties} onClick={() => setFilter('all')} role="tab" aria-selected={filter === 'all'}>
+            <button className={`filt ${filter === 'all' ? 'is-active' : ''}`} style={{ '--col': 'var(--cream)' } as CSSProperties} onClick={() => {
+                sfx.toggle()
+                setFilter('all')
+              }} role="tab" aria-selected={filter === 'all'}>
               <span className="filt__count t-num">{String(archive.length).padStart(2, '0')}</span>
               <span className="filt__name">All work</span>
             </button>
@@ -132,7 +143,10 @@ export function Archive() {
               const n = archive.filter((x) => x.collection === c.id).length
               const on = filter === c.id
               return (
-                <button key={c.id} className={`filt ${on ? 'is-active' : ''}`} style={{ '--col': c.paint } as CSSProperties} onClick={() => setFilter(c.id)} role="tab" aria-selected={on}>
+                <button key={c.id} className={`filt ${on ? 'is-active' : ''}`} style={{ '--col': c.paint } as CSSProperties} onClick={() => {
+                    sfx.toggle()
+                    setFilter(c.id)
+                  }} role="tab" aria-selected={on}>
                   <span className="filt__count t-num">{String(n).padStart(2, '0')}</span>
                   <span className="filt__name">{c.title}</span>
                 </button>
@@ -159,8 +173,11 @@ export function Archive() {
                         <button
                           data-id={x.id}
                           className={`piece ${on ? 'is-active' : ''}`}
-                          onPointerMove={() => setIndex(i)}
-                          onClick={() => (on ? window.open(x.link, '_blank', 'noreferrer') : setIndex(i))}
+                          onPointerMove={() => {
+                            if (!on) sfx.tick()
+                            setIndex(i)
+                          }}
+                          onClick={() => (on ? (sfx.confirm(), window.open(x.link, '_blank', 'noreferrer')) : setIndex(i))}
                           aria-selected={on}
                           aria-label={`${x.title}, ${c.title}, ${x.year}`}
                         >

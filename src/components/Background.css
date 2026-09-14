@@ -106,7 +106,3 @@
   background: radial-gradient(ellipse at center, transparent 55%, rgba(10, 9, 9, 0.7) 100%);
 }
 
-/* pure-dark theme: no art at all */
-[data-theme='dark'] .bg__dim {
-  opacity: 1 !important;
-}

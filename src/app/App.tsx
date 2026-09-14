@@ -4,6 +4,7 @@ import { SettingsProvider } from './settings'
 import { RouterProvider, useNav } from './router'
 import { Wipe } from '../components/Wipe'
 import { Cursor } from '../components/Cursor'
+import { Music } from './music'
 import { Boot } from '../screens/Boot'
 import { MainMenu } from '../screens/MainMenu'
 import { Profile } from '../screens/Profile'
@@ -74,6 +75,7 @@ export default function App() {
         <Screens />
         <Wipe />
         <Cursor />
+        <Music />
       </RouterProvider>
     </SettingsProvider>
   )

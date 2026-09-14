@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { sfx } from '../app/audio'
 
 interface Options {
   count: number
@@ -37,6 +38,7 @@ export function useKeyNav({
     (delta: number) => {
       const next = indexRef.current + delta
       const clamped = loop ? (next + count) % count : Math.max(0, Math.min(count - 1, next))
+      if (clamped !== indexRef.current) sfx.tick()
       indexRef.current = clamped
       setIndex(clamped)
     },
@@ -83,6 +85,7 @@ export function useKeyNav({
         case ' ':
           if (selectRef.current) {
             e.preventDefault()
+            sfx.confirm()
             selectRef.current(indexRef.current)
           }
           break
@@ -90,6 +93,7 @@ export function useKeyNav({
         case 'Backspace':
           if (backRef.current) {
             e.preventDefault()
+            sfx.back()
             backRef.current()
           }
           break
@@ -99,7 +103,14 @@ export function useKeyNav({
     return () => window.removeEventListener('keydown', onKey)
   }, [axis, enabled, move])
 
-  return { index, setIndex }
+  // hover / click selection from the screens: same tick as the keys
+  const pick = useCallback((i: number) => {
+    if (i !== indexRef.current) sfx.tick()
+    indexRef.current = i
+    setIndex(i)
+  }, [])
+
+  return { index, setIndex: pick }
 }
 
 /** Escape / Backspace → back, for screens without a list */
