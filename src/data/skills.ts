@@ -1,93 +1,69 @@
-export type Level = 'Advanced' | 'Proficient' | 'Intermediate' | 'Familiar'
-
-export interface SkillGroup {
+export interface SkillCategory {
   id: string
   title: string
-  accent: 'red' | 'teal' | 'gold' | 'blue'
-  skills: { name: string; level: Level }[]
+  /** short name for the collapsed banner */
+  short: string
+  paint: string
+  /** character portrait (public/art/mobile/chara-N.jpg) */
+  portrait: number
+  skills: string[]
 }
 
-export const skillGroups: SkillGroup[] = [
+export const skillCategories: SkillCategory[] = [
   {
-    id: 'programming',
-    title: 'Programming',
-    accent: 'red',
-    skills: [
-      { name: 'Python', level: 'Advanced' },
-      { name: 'C++', level: 'Proficient' },
-      { name: 'JavaScript', level: 'Proficient' },
-      { name: 'Dart', level: 'Proficient' },
-    ],
+    id: 'languages',
+    portrait: 1,
+    title: 'Languages',
+    short: 'Languages',
+    paint: '#f14352',
+    skills: ['Python', 'C++', 'C#', 'TypeScript', 'JavaScript', 'Java', 'Dart', 'SQL'],
   },
   {
-    id: 'game',
+    id: 'frontend',
+    portrait: 3,
+    title: 'Frontend & Mobile',
+    short: 'Frontend',
+    paint: '#ea6c1b',
+    skills: ['React', 'Next.js', 'Tailwind CSS', 'Flutter'],
+  },
+  {
+    id: 'backend',
+    portrait: 2,
+    title: 'Backend & Databases',
+    short: 'Backend',
+    paint: '#d4a900',
+    skills: ['Node.js', 'Express', 'FastAPI', '.NET', 'PostgreSQL', 'MongoDB', 'Redis', 'Prisma'],
+  },
+  {
+    id: 'ai',
+    portrait: 7,
+    title: 'AI · ML · Vision',
+    short: 'AI / ML',
+    paint: '#0c8e5e',
+    skills: ['NumPy', 'Pandas', 'scikit-learn', 'PyTorch', 'OpenCV', 'YOLO', 'ONNX'],
+  },
+  {
+    id: 'games',
+    portrait: 4,
     title: 'Game Development',
-    accent: 'teal',
-    skills: [
-      { name: 'Unity', level: 'Proficient' },
-      { name: 'Unreal', level: 'Intermediate' },
-      { name: 'Godot', level: 'Familiar' },
-    ],
+    short: 'Games',
+    paint: '#3a96aa',
+    skills: ['Unity', 'Unreal Engine 5', 'Photon Fusion', 'Steamworks'],
   },
   {
-    id: 'web',
-    title: 'Web',
-    accent: 'gold',
-    skills: [
-      { name: 'React', level: 'Proficient' },
-      { name: 'Node.js', level: 'Proficient' },
-      { name: 'PostgreSQL', level: 'Proficient' },
-    ],
+    id: 'devops',
+    portrait: 6,
+    title: 'DevOps & Tools',
+    short: 'DevOps',
+    paint: '#b94abb',
+    skills: ['Docker', 'Git', 'GitHub Actions', 'Git LFS', 'Bash', 'Linux', 'Postman'],
   },
   {
-    id: 'creative',
-    title: 'Creative Tools',
-    accent: 'blue',
-    skills: [
-      { name: 'Photoshop', level: 'Proficient' },
-      { name: 'Illustrator', level: 'Proficient' },
-      { name: 'After Effects', level: 'Intermediate' },
-      { name: 'Figma', level: 'Proficient' },
-    ],
-  },
-]
-
-export interface Archetype {
-  id: string
-  title: string
-  lines: string[]
-  tags: string[]
-  /** official character art used as the backdrop (public/art/mobile/chara-N.jpg) */
-  art: number
-}
-
-export const archetypes: Archetype[] = [
-  {
-    id: 'engineer',
-    title: 'Engineer',
-    lines: ['Software systems', 'Web applications', 'Development tools'],
-    tags: ['Python', 'C++', 'React', 'Node', 'SQL'],
-    art: 1,
-  },
-  {
-    id: 'creator',
-    title: 'Creator',
-    lines: ['Game development', 'UI', 'Motion / visual work'],
-    tags: ['Unity', 'Unreal', 'Figma', 'After Effects'],
-    art: 3,
-  },
-  {
-    id: 'researcher',
-    title: 'Researcher',
-    lines: ['AI', 'ML', 'NLP'],
-    tags: ['PyTorch', 'Transformers', 'LLMs'],
-    art: 2,
-  },
-  {
-    id: 'builder',
-    title: 'Builder',
-    lines: ['Personal projects', 'Experiments', 'Tools'],
-    tags: ['Flutter', 'Godot', 'CLI'],
-    art: 7,
+    id: 'design',
+    portrait: 5,
+    title: 'Creation & Design',
+    short: 'Design',
+    paint: '#d84291',
+    skills: ['Photoshop', 'Illustrator', 'Premiere Pro', 'After Effects', 'Figma'],
   },
 ]

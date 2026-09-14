@@ -1,0 +1,303 @@
+/* ─────────────────────────────────────────────────────────
+   ABILITIES — discipline wheel (left) · tool panel (centre) · portrait (right)
+   ───────────────────────────────────────────────────────── */
+
+.abilities .screen__body {
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+.ab {
+  --paint: var(--red);
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(300px, 32vw) minmax(0, 1fr) 20vw;
+  gap: clamp(20px, 2.5vw, 48px);
+  align-items: stretch;
+}
+
+.ab__glow {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  opacity: 0.22;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* ── wheel ─────────────────────────────────────────────────────────────── */
+
+.ab__wheel-wrap {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+.wheel {
+  position: relative;
+  width: min(76%, 58vh);
+  aspect-ratio: 1;
+}
+.wheel__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 50% 50%;
+}
+.wheel__hair {
+  fill: none;
+  stroke: var(--line-faint);
+  stroke-width: 1;
+}
+.wheel__hair--dash {
+  stroke-dasharray: 2 6;
+}
+.wheel__tick {
+  stroke: var(--line-faint);
+  stroke-width: 1;
+}
+.wheel__sector {
+  cursor: pointer;
+}
+.wheel__sector path {
+  opacity: 0.22;
+  stroke: var(--cream);
+  stroke-width: 0.6;
+  stroke-opacity: 0.35;
+  transition:
+    opacity var(--dur) ease,
+    filter var(--dur) ease;
+}
+.wheel__sector:hover path {
+  opacity: 0.5;
+}
+.wheel__sector.is-active path {
+  opacity: 1;
+  filter: drop-shadow(0 0 14px rgba(0, 0, 0, 0.6));
+}
+.wheel__node {
+  fill: var(--cream);
+  opacity: 0.4;
+}
+.wheel__sector.is-active .wheel__node {
+  opacity: 1;
+}
+
+.wheel__centre {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.wheel__initial {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 96;
+  font-size: 104px;
+  paint-order: stroke fill;
+  stroke: var(--ink);
+  stroke-width: 6px;
+}
+
+.wheel__name {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-ui);
+  font-stretch: var(--ui-stretch);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: clamp(0.75rem, 1.5vh, 1.05rem);
+  color: var(--fg-dim);
+  padding: 4px 8px;
+  white-space: nowrap;
+  transition:
+    color var(--dur),
+    font-size var(--dur);
+  text-shadow: 0.05em 0.05em 0 var(--ink);
+}
+.wheel__name.is-active {
+  font-size: clamp(1.05rem, 2.3vh, 1.6rem);
+  letter-spacing: 0.18em;
+}
+
+.wheel__marker {
+  position: absolute;
+  left: 50%;
+  top: 2.5%;
+  width: 12px;
+  height: 12px;
+  background: var(--cream);
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 0 3px var(--ink);
+}
+
+/* ── panel ─────────────────────────────────────────────────────────────── */
+
+.ab__panel {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-faint) transparent;
+  padding: 1vh 0.5vw 3vh 0;
+  -webkit-mask-image: linear-gradient(180deg, #000 92%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 92%, transparent 100%);
+}
+.ab__panel-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+.ab__kicker {
+  color: var(--paint);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 1.4vh, 0.95rem);
+}
+.ab__title {
+  position: relative;
+  display: inline-block;
+  align-self: flex-start;
+  isolation: isolate;
+  font-size: clamp(40px, 7.4vh, 92px);
+  line-height: 0.9;
+  padding: 0.06em 0.2em 0.04em 0.08em;
+  margin-left: -0.08em;
+  max-width: 100%;
+  white-space: normal;
+  transform: none;
+}
+.ab__title-text {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  transform: scaleX(1.12);
+  transform-origin: left center;
+  color: var(--ink);
+  text-shadow: 0.04em 0.04em 0 var(--cream);
+}
+.ab__title-splat {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.ab__title-splat .splat {
+  inset: -22% -10% -24% -6%;
+  width: 118%;
+  height: 146%;
+}
+
+/* tiles */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(9.5vh, auto);
+  gap: 1.3vh 1.1vw;
+  align-content: start;
+}
+.tile {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 1.4vh 1.3vw;
+  background: rgba(12, 10, 10, 0.72);
+  box-shadow: inset 0 0 0 1px var(--line-faint);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  transition:
+    background-color var(--dur-fast),
+    box-shadow var(--dur-fast);
+}
+.tile:hover {
+  background: rgba(242, 234, 217, 0.08);
+  box-shadow: inset 0 0 0 1px var(--paint);
+}
+.tile__mark {
+  width: 12px;
+  height: 12px;
+  background: var(--paint);
+  transform: rotate(45deg);
+}
+.tile__name {
+  font-family: var(--font-ui);
+  font-stretch: 70%;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: clamp(1.15rem, 2.8vh, 2.1rem);
+  line-height: 1;
+  color: var(--cream);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tile__idx {
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  color: var(--fg-faint);
+}
+
+/* ── portrait ──────────────────────────────────────────────────────────── */
+
+.ab__portrait {
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+}
+.ab__portrait img {
+  position: absolute;
+  right: -6vw;
+  bottom: -4vh;
+  height: 112%;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
+  filter: saturate(1.05);
+}
+
+/* ── responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 1200px) {
+  .ab {
+    grid-template-columns: minmax(280px, 36vw) minmax(0, 1fr);
+  }
+  .ab__portrait {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .abilities .screen__body {
+    overflow-y: auto;
+  }
+  .ab {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .wheel {
+    width: min(74vw, 44vh);
+    margin: 4vh auto 5vh;
+  }
+  .ab__panel {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .ab__title {
+    font-size: clamp(36px, 10vw, 56px);
+  }
+  .tiles {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+}
