@@ -12,49 +12,59 @@
   opacity: 1;
 }
 
-.cursor__diamond {
+/* the blade's tip sits on the pointer (hotspot 2,2 of the 32-box) */
+.cursor__blade {
   position: absolute;
-  left: -6px;
-  top: -6px;
-  width: 12px;
-  height: 12px;
-  border: 1.5px solid var(--cream);
-  transform: rotate(45deg);
+  left: -2px;
+  top: -2px;
+  overflow: visible;
+  transform-origin: 2px 2px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
   transition:
-    background-color var(--dur-fast),
     transform var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast);
-  mix-blend-mode: difference;
+    opacity var(--dur-fast);
 }
 
-.cursor__ring {
+/* the reticle is centred on the pointer */
+.cursor__reticle {
   position: absolute;
-  left: -18px;
-  top: -18px;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--red);
-  transform: rotate(45deg) scale(0.4);
+  left: -16px;
+  top: -16px;
+  overflow: visible;
+  transform-origin: 16px 16px;
+  transform: scale(0.5);
   opacity: 0;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
   transition:
-    transform var(--dur) var(--ease-out),
-    opacity var(--dur);
+    transform var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast);
+}
+.cursor__ring {
+  transform-origin: 16px 16px;
+  animation: cursor-spin 6s linear infinite;
+}
+@keyframes cursor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+[data-motion='reduced'] .cursor__ring {
+  animation: none;
 }
 
-.cursor--hover .cursor__diamond {
-  background: var(--cream);
-  transform: rotate(45deg) scale(0.85);
+.cursor--hover .cursor__blade {
+  opacity: 0;
+  transform: scale(0.6);
 }
-.cursor--hover .cursor__ring {
+.cursor--hover .cursor__reticle {
   opacity: 1;
-  transform: rotate(45deg) scale(1);
+  transform: scale(1);
 }
-.cursor--down .cursor__diamond {
-  background: var(--red);
-  border-color: var(--red);
-  transform: rotate(45deg) scale(0.7);
+.cursor--down .cursor__blade {
+  opacity: 0;
+  transform: scale(0.6);
 }
-.cursor--down .cursor__ring {
+.cursor--down .cursor__reticle {
   opacity: 1;
-  transform: rotate(45deg) scale(0.7);
+  transform: scale(0.8) rotate(45deg);
 }

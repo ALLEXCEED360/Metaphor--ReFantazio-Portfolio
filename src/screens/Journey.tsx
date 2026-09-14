@@ -67,7 +67,6 @@ export function Journey() {
       head={<ScreenTitle sub="Education · Work · Research · the path so far">The Journey</ScreenTitle>}
       hints={[
         { key: '↕', label: 'Chapter' },
-        { key: '⌫', label: 'Back' },
       ]}
       className="journey"
     >

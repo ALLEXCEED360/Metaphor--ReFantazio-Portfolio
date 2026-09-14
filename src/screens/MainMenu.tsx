@@ -7,9 +7,27 @@ import { useKeyNav } from '../hooks/useKeyNav'
 import { useIsMobile } from '../hooks/useMedia'
 import { mainMenu } from '../data/menu'
 import { profile } from '../data/profile'
+import { journey } from '../data/education'
+import { projects } from '../data/projects'
+import { skillCategories } from '../data/skills'
+import { experience } from '../data/experience'
+import { archive } from '../data/archive'
 import './MainMenu.css'
 
 const KEY = 'aryan-portfolio:menu-cursor'
+
+/* one line per entry, counted from the data */
+const briefs: Record<string, string> = {
+  journey: `${journey.length} milestones, from school in Dhaka to graduate study at Georgia Tech`,
+  quests: `${projects.length} projects, ${projects.filter((p) => p.tier === 'main').length} main and ${projects.filter((p) => p.tier === 'side').length} side, led by Dragon Drop on Steam`,
+  abilities: `${skillCategories.reduce((n, c) => n + c.skills.length, 0)} tools across ${skillCategories.length} disciplines, from Unity to After Effects`,
+  chronicle: `${experience.length} roles in work, teaching and leadership, 2022 to present`,
+  research: 'One undergraduate thesis on emotional reasoning in language models, graded A',
+  archive: `${archive.length} works: Unreal Engine cinematics, motion graphics and illustration`,
+  profile: 'Who I am, where I am from, and what I care about building',
+  contact: 'Write a letter, or find me on LinkedIn, GitHub, ArtStation and Behance',
+  settings: 'Animation, cursor, music and sound, saved in this browser',
+}
 const ease = [0.16, 1, 0.3, 1] as const
 
 /* ─────────────────────────────────────────────────────────
@@ -282,16 +300,22 @@ export function MainMenu() {
         <span className="menu__vname t-ui-bold">{profile.name}</span>
       </div>
 
-      {/* ── stats block (the game's MONEY / MAG) ────────────────────────── */}
-      <aside className="menu__stats" aria-label="Profile summary">
-        <div className="menu__stat">
-          <span className="menu__stat-label t-label">Class</span>
-          <span className="menu__stat-value t-ui-bold">{profile.class}</span>
-        </div>
-        <div className="menu__stat">
-          <span className="menu__stat-label t-label">Selected</span>
-          <span className="menu__stat-value t-ui-bold">{item.label}</span>
-        </div>
+      {/* ── brief: what the chosen entry holds ─────────────────────────── */}
+      <aside className="menu__brief" aria-live="polite">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={item.id}
+            className="mbrief"
+            initial={reducedMotion ? false : { opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10, transition: { duration: 0.12 } }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="mbrief__kicker t-mono">{String(mainMenu.indexOf(item) + 1).padStart(2, '0')} · {item.hint}</span>
+            <span className="mbrief__title">{item.label}</span>
+            <span className="mbrief__line t-ui">{briefs[item.id] ?? ''}</span>
+          </motion.div>
+        </AnimatePresence>
       </aside>
 
       <footer className="menu__foot">

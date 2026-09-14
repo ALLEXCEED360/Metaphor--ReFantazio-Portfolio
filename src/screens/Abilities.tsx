@@ -44,7 +44,6 @@ export function Abilities() {
       head={<ScreenTitle sub={`${N} disciplines · ${total} tools`}>Abilities</ScreenTitle>}
       hints={[
         { key: '↔', label: 'Discipline' },
-        { key: '⌫', label: 'Back' },
       ]}
       onBack={() => go('/menu')}
       className="abilities"

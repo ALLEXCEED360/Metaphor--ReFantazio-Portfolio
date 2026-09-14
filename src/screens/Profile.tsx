@@ -71,7 +71,6 @@ export function Profile() {
       hints={[
         { key: '↕', label: 'Section' },
         { key: '↵', label: 'Open' },
-        { key: '⌫', label: 'Back' },
       ]}
       onBack={() => go('/menu')}
       className="profile"

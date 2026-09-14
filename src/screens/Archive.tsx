@@ -121,7 +121,6 @@ export function Archive() {
         { key: '↕', label: 'Row' },
         { key: '↔', label: 'Piece' },
         { key: '↵', label: p.linkLabel },
-        { key: '⌫', label: 'Back' },
       ]}
       onBack={() => go('/menu')}
       className="archive"

@@ -204,13 +204,12 @@
   transform: rotate(-30deg);
   filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
 }
-.preview__cursor.is-diamond {
-  width: 14px;
-  height: 14px;
+.preview__cursor--brush {
+  width: 48px;
+  height: 48px;
   border: 0;
-  background: var(--cream);
-  transform: rotate(45deg);
-  box-shadow: 0 0 0 3px var(--ink);
+  transform: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
 }
 .preview__caption {
   font-size: 0.66rem;

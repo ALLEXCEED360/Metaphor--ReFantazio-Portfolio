@@ -67,7 +67,6 @@ export function Quests({ initialId }: { initialId?: string }) {
       hints={[
         { key: '↔', label: 'Quest' },
         { key: '↵', label: drawer ? 'Close' : 'Record' },
-        { key: '⌫', label: 'Back' },
       ]}
       onBack={() => go('/menu')}
       className="quests"

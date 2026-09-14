@@ -97,7 +97,6 @@ export function Contact() {
       hints={[
         { key: '↕', label: 'Channel' },
         { key: '↵', label: 'Open' },
-        { key: '⌫', label: 'Back' },
       ]}
       onBack={() => go('/menu')}
       className="contact"

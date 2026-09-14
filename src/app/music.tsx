@@ -1,130 +1,106 @@
 import { useEffect, useRef } from 'react'
 import { useSettings } from './settings'
-import { useNav } from './router'
-import './music.css'
 
 /**
- * Background music, streamed from YouTube through the IFrame Player API so
- * no music files are hosted here. The player is kept out of sight; a small
- * credit chip names the track and links to the video. Playback can only
- * begin after a user gesture, which the title screen's "press any key" is.
+ * Background music: one long track from public/music, looped, playing from
+ * the moment the site opens. Browsers refuse to start sound before the
+ * visitor has interacted with the page, so playback is attempted at once
+ * and, if refused, retried on the first key press, click or touch. The
+ * position is remembered for the session, so a refresh or a redirect
+ * picks the music up where it was instead of starting over.
  */
 
 export const TRACK = {
-  id: 'jF1YTiVsZ3A',
-  title: 'Main Menu Theme',
+  src: '/music/ode-to-heroes.mp3',
+  title: 'Ode to Heroes',
   by: 'Metaphor: ReFantazio · Shoji Meguro',
-  url: 'https://www.youtube.com/watch?v=jF1YTiVsZ3A',
 }
-const VOLUME = 32
+const VOLUME = 0.45
+const POS_KEY = 'aryan-portfolio:music-pos'
 
-type YTPlayer = {
-  playVideo(): void
-  pauseVideo(): void
-  setVolume(v: number): void
-  getVolume(): number
-  getPlayerState(): number
-  destroy(): void
-}
-declare global {
-  interface Window {
-    YT?: { Player: new (el: HTMLElement, opts: unknown) => YTPlayer; PlayerState: { PLAYING: number } }
-    onYouTubeIframeAPIReady?: () => void
+let audio: HTMLAudioElement | null = null
+let allowed = true
+let armed = false // gesture listeners in place
+
+function ensure(): HTMLAudioElement {
+  if (audio) return audio
+  audio = new Audio(TRACK.src)
+  audio.loop = true
+  audio.preload = 'auto'
+  audio.volume = VOLUME
+  // resume where the session left off
+  const saved = Number(sessionStorage.getItem(POS_KEY))
+  if (Number.isFinite(saved) && saved > 0) {
+    const seek = () => {
+      audio!.currentTime = saved
+      audio!.removeEventListener('loadedmetadata', seek)
+    }
+    if (audio.readyState >= 1) seek()
+    else audio.addEventListener('loadedmetadata', seek)
   }
+  // keep the position fresh
+  window.setInterval(() => {
+    if (audio && !audio.paused) sessionStorage.setItem(POS_KEY, String(audio.currentTime))
+  }, 2000)
+  // dev aid
+  ;(window as unknown as { __music?: () => unknown }).__music = () => audio && { paused: audio.paused, time: audio.currentTime, ready: audio.readyState, armed, allowed, err: audio.error?.message }
+  return audio
 }
 
-let player: YTPlayer | null = null
-let ready = false
-let wanted = false // the user has made a gesture and music is switched on
-let allowed = true // the music setting
-
-function apply() {
-  if (!player || !ready) return
-  if (wanted && allowed) {
-    player.setVolume(VOLUME)
-    player.playVideo()
-  } else {
-    player.pauseVideo()
-  }
+/** try to play; if the browser refuses, wait for the first gesture */
+function tryPlay() {
+  if (!allowed) return
+  const a = ensure()
+  a.play().then(disarm).catch(arm)
+}
+function onGesture() {
+  tryPlay()
+}
+function arm() {
+  if (armed) return
+  armed = true
+  window.addEventListener('keydown', onGesture)
+  window.addEventListener('pointerdown', onGesture)
+  window.addEventListener('touchstart', onGesture)
+}
+function disarm() {
+  if (!armed) return
+  armed = false
+  window.removeEventListener('keydown', onGesture)
+  window.removeEventListener('pointerdown', onGesture)
+  window.removeEventListener('touchstart', onGesture)
 }
 
-/** called from the first gesture (the title screen) */
 export function startMusic() {
-  wanted = true
-  apply()
+  tryPlay()
 }
 export function setMusicAllowed(on: boolean) {
   allowed = on
-  apply()
-}
-
-function loadApi(): Promise<void> {
-  return new Promise((resolve) => {
-    if (window.YT?.Player) return resolve()
-    const prev = window.onYouTubeIframeAPIReady
-    window.onYouTubeIframeAPIReady = () => {
-      prev?.()
-      resolve()
-    }
-    if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-      const s = document.createElement('script')
-      s.src = 'https://www.youtube.com/iframe_api'
-      s.async = true
-      document.head.appendChild(s)
-    }
-  })
+  if (!on) {
+    audio?.pause()
+    disarm()
+  } else tryPlay()
 }
 
 export function Music() {
   const { settings } = useSettings()
-  const { route } = useNav()
-  const host = useRef<HTMLDivElement>(null)
+  const started = useRef(false)
 
   useEffect(() => {
-    allowed = settings.music === 'on'
-    apply()
+    setMusicAllowed(settings.music === 'on')
   }, [settings.music])
 
   useEffect(() => {
-    let cancelled = false
-    loadApi().then(() => {
-      if (cancelled || !host.current || player) return
-      player = new window.YT!.Player(host.current, {
-        videoId: TRACK.id,
-        playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, loop: 1, playlist: TRACK.id, modestbranding: 1, rel: 0, playsinline: 1, origin: window.location.origin },
-        events: {
-          onReady: () => {
-            ready = true
-            apply()
-            // dev aid: window.__musicState() → 1 while playing
-            ;(window as unknown as { __musicState?: () => number }).__musicState = () => player?.getPlayerState() ?? -9
-          },
-          onStateChange: (e: { data: number }) => {
-            // 0 = ended; the loop param usually handles it, this is the belt to its braces
-            if (e.data === 0 && wanted && allowed) player?.playVideo()
-          },
-        },
-      })
-    })
-    return () => {
-      cancelled = true
+    if (started.current) return
+    started.current = true
+    tryPlay()
+    // when the tab comes back, make sure we are still going
+    const onVis = () => {
+      if (document.visibilityState === 'visible' && allowed && audio?.paused) tryPlay()
     }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
   }, [])
 
-  const showChip = route.screen !== 'boot' && settings.music === 'on'
-  return (
-    <>
-      <div className="music" aria-hidden="true">
-        <div ref={host} />
-      </div>
-      {showChip && (
-        <a className="music__chip t-mono" href={TRACK.url} target="_blank" rel="noreferrer" title={`${TRACK.title} · ${TRACK.by} · via YouTube`}>
-          <span className="music__note" aria-hidden="true">
-            ♪
-          </span>
-          {TRACK.title}
-        </a>
-      )}
-    </>
-  )
+  return null
 }

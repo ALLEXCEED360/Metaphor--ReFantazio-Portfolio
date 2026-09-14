@@ -59,10 +59,10 @@ export function Settings() {
     {
       key: 'cursor',
       label: 'Cursor',
-      desc: 'The diamond pointer used across the site.',
+      desc: 'The geometric blade pointer, turning into a reticle over anything you can press.',
       paint: '#d4a900',
       options: [
-        { value: 'custom', label: 'Diamond', note: 'The site pointer' },
+        { value: 'custom', label: 'Blade', note: 'The site pointer' },
         { value: 'default', label: 'System', note: 'Your usual arrow' },
       ],
       disabled: fine ? undefined : 'Only with a mouse or trackpad',
@@ -70,7 +70,7 @@ export function Settings() {
     {
       key: 'music',
       label: 'Music',
-      desc: 'The main menu theme, streamed from YouTube. Starts after your first key press.',
+      desc: 'Ode to Heroes, from Metaphor: ReFantazio. Plays from the title screen and carries across every page.',
       paint: '#b94abb',
       options: [
         { value: 'on', label: 'On', note: 'Looping quietly' },
@@ -164,7 +164,6 @@ export function Settings() {
       hints={[
         { key: '↕', label: 'Option' },
         { key: '↔', label: 'Change' },
-        { key: '⌫', label: 'Back' },
       ]}
       onBack={() => go('/menu')}
       className="settings"
@@ -266,10 +265,19 @@ export function Settings() {
               >
                 {settings.motion === 'full' ? 'Full' : 'Still'}
               </motion.span>
-              <span className={`preview__cursor ${settings.cursor === 'custom' && fine ? 'is-diamond' : ''}`} />
+              {settings.cursor === 'custom' && fine ? (
+                <svg className="preview__cursor preview__cursor--brush" viewBox="0 0 32 32" width="48" height="48">
+                  <path d="M 4,4 C 8,2 14,8 12,14 C 18,12 24,18 20,24 C 16,28 10,22 4,20 C 2,14 0,8 4,4 Z" fill="#E60033" opacity="0.85" />
+                  <polygon points="2,2 22,10 12,14 10,22" fill="#111111" stroke="#FFFFFF" strokeWidth="1.5" strokeLinejoin="round" />
+                  <polygon points="4,4 18,10 11,13 9,18" fill="#00E5FF" />
+                  <line x1="4" y1="4" x2="11" y2="13" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <span className="preview__cursor" />
+              )}
             </div>
             <span className="preview__caption t-mono">
-              {settings.motion === 'full' ? 'Wipes, strokes and video on' : 'Fades only'} · {settings.cursor === 'custom' && fine ? 'diamond cursor' : 'system cursor'}
+              {settings.motion === 'full' ? 'Wipes, strokes and video on' : 'Fades only'} · {settings.cursor === 'custom' && fine ? 'blade cursor' : 'system cursor'}
             </span>
           </div>
 

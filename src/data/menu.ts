@@ -10,7 +10,7 @@ export interface MenuEntry {
 export const mainMenu: MenuEntry[] = [
   { id: 'journey', label: 'Journey', word: 'Journey', path: '/journey', hint: 'Education & path' },
   { id: 'quests', label: 'Projects', word: 'Quests', path: '/quests', hint: 'Quest log' },
-  { id: 'abilities', label: 'Abilities', word: 'Abilities', path: '/abilities', hint: 'Skills & archetypes' },
+  { id: 'abilities', label: 'Abilities', word: 'Abilities', path: '/abilities', hint: 'Skills & tools' },
   { id: 'chronicle', label: 'Experience', word: 'Chronicle', path: '/chronicle', hint: 'Work history' },
   { id: 'research', label: 'Research', word: 'Research', path: '/research', hint: 'Thesis & papers' },
   { id: 'archive', label: 'Creative', word: 'Archive', path: '/archive', hint: 'Motion, cinematics & art' },

@@ -56,7 +56,6 @@ export function Research() {
       }
       hints={[
         { key: "↔", label: "Chapter" },
-        { key: "⌫", label: "Back" },
       ]}
       onBack={() => go("/menu")}
       className="research"

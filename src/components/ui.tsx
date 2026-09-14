@@ -20,8 +20,8 @@ export function Hints({ hints }: { hints?: Hint[] }) {
   const list: Hint[] = hints ?? [
     { key: '↑↓', label: 'Move' },
     { key: 'Enter', label: 'Confirm' },
-    { key: 'Esc', label: 'Back' },
   ]
+  if (list.length === 0) return null
   return (
     <div className="hints" aria-hidden="true">
       {list.map((h) => (

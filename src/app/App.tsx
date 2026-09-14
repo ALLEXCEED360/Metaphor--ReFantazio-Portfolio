@@ -1,5 +1,4 @@
 import { cloneElement } from 'react'
-import { AnimatePresence } from 'framer-motion'
 import { SettingsProvider } from './settings'
 import { RouterProvider, useNav } from './router'
 import { Wipe } from '../components/Wipe'
@@ -61,11 +60,9 @@ function Screens() {
       break
   }
 
-  return (
-    <AnimatePresence mode="wait" initial={false}>
-      {cloneElement(el, { key })}
-    </AnimatePresence>
-  )
+  // no exit choreography here: the word wipe covers the swap, and waiting on
+  // exit animations could leave the old screen stranded (a black screen)
+  return cloneElement(el, { key })
 }
 
 export default function App() {

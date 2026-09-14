@@ -65,7 +65,6 @@ export function Chronicle() {
       head={<ScreenTitle sub={`${N} records · work, teaching and leadership`}>Chronicle</ScreenTitle>}
       hints={[
         { key: '↕', label: 'Record' },
-        { key: '⌫', label: 'Back' },
       ]}
       onBack={() => go('/menu')}
       className="chronicle"
