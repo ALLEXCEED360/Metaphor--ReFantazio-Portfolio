@@ -1,83 +1,218 @@
-import { useState } from 'react'
+import { useEffect, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Background } from '../components/Background'
+import { Background, charaUrl } from '../components/Background'
 import { ScreenTitle } from '../components/ScreenTitle'
+import { Splat } from '../components/Splat'
 import { Screen, Tag } from '../components/ui'
 import { useKeyNav } from '../hooks/useKeyNav'
+import { useIsMobile } from '../hooks/useMedia'
 import { useNav } from '../app/router'
 import { useSettings } from '../app/settings'
-import { experience } from '../data/experience'
-import './screens.css'
+import { experience, kindLabel, type Experience } from '../data/experience'
+import './Chronicle.css'
+
+const ease = [0.16, 1, 0.3, 1] as const
+const KEY = 'aryan-portfolio:chronicle'
+
+// newest first
+const entries = [...experience].sort((a, b) => b.start - a.start)
+const N = entries.length
+const NOW = (() => {
+  const d = new Date()
+  return d.getFullYear() + (d.getMonth() + 0.5) / 12
+})()
+
+/** how long a record ran, as a big figure + unit */
+function duration(e: Experience): { value: string; unit: string } {
+  const end = e.ongoing ? Math.max(NOW, e.start + 1 / 12) : e.end
+  const months = Math.max(1, Math.round((end - e.start) * 12))
+  if (months < 12) return { value: String(months), unit: months === 1 ? 'month' : 'months' }
+  // whole and half years read better than decimals
+  const years = Math.round(months / 6) / 2
+  const v = Number.isInteger(years) ? String(years) : years.toFixed(1)
+  return { value: v, unit: v === '1' ? 'year' : 'years' }
+}
+
+/* ─────────────────────────────────────────────────────────
+   CHRONICLE — one record fills the screen at a time, like a bond page:
+   an index of numerals down the left, the hero dossier in the middle,
+   a character portrait bleeding in from the right. ↑/↓ turns the page.
+   ───────────────────────────────────────────────────────── */
 
 export function Chronicle() {
-  const { back } = useNav()
+  const { go } = useNav()
   const { reducedMotion } = useSettings()
-  const [open, setOpen] = useState<string | null>(experience[0].id)
-  const { setIndex } = useKeyNav({
-    count: experience.length,
-    onSelect: (i) => setOpen((o) => (o === experience[i].id ? null : experience[i].id)),
-    onBack: back,
+  const isMobile = useIsMobile()
+  const { index, setIndex } = useKeyNav({
+    count: N,
+    axis: 'both',
+    loop: false,
+    initial: (() => {
+      const q = Number(new URLSearchParams(window.location.search).get('sel'))
+      if (Number.isFinite(q) && q >= 1 && q <= N) return q - 1
+      const saved = Number(sessionStorage.getItem(KEY))
+      return Number.isFinite(saved) && saved >= 0 && saved < N ? saved : 0
+    })(),
+    onBack: () => go('/menu'),
   })
+  useEffect(() => sessionStorage.setItem(KEY, String(index)), [index])
+  const e = entries[index]
+  const dur = duration(e)
+  const num = String(index + 1).padStart(2, '0')
 
   return (
-    <Screen head={<ScreenTitle sub="Professional record">Chronicle</ScreenTitle>}>
-      <Background art={1} mobileArt={6} focus="left" dim={0.5} position="center 40%" />
-      <div className="chron">
-        {experience.map((x, i) => {
-          const isOpen = open === x.id
-          return (
-            <motion.article
-              key={x.id}
-              className="chron__item"
-              initial={reducedMotion ? false : { opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <button
-                className="chron__head"
-                onClick={() => {
-                  setIndex(i)
-                  setOpen(isOpen ? null : x.id)
-                }}
-                onPointerMove={() => setIndex(i)}
-                aria-expanded={isOpen}
+    <Screen
+      head={<ScreenTitle sub={`${N} records · work, teaching and leadership`}>Chronicle</ScreenTitle>}
+      hints={[
+        { key: '↕', label: 'Record' },
+        { key: '⌫', label: 'Back' },
+      ]}
+      onBack={() => go('/menu')}
+      className="chronicle"
+    >
+      <Background art={e.art} mobileArt={e.portrait} focus="center" dim={0.72} position="center 35%" />
+
+      <div className={`ch ${isMobile ? 'ch--mobile' : ''}`} style={{ '--paint': e.paint } as CSSProperties}>
+        <motion.div
+          className="ch__glow"
+          aria-hidden="true"
+          animate={{ background: `radial-gradient(ellipse at 70% 60%, ${e.paint} 0%, transparent 55%)` }}
+          transition={{ duration: 0.6 }}
+        />
+
+        {/* ── portrait ─────────────────────────────────────────────────── */}
+        {!isMobile && (
+          <div className="ch__portrait" aria-hidden="true">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={e.id}
+                className="ch__portrait-inner"
+                initial={reducedMotion ? false : { opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 40, transition: { duration: 0.18 } }}
+                transition={{ duration: 0.55, ease }}
               >
-                <span className="chron__year t-num">{x.year}</span>
-                <span>
-                  <span className="chron__company t-ui-bold" style={{ display: 'block' }}>
-                    {x.company}
-                  </span>
-                  <span className="chron__role t-mono" style={{ display: 'block' }}>
-                    {x.role}
-                  </span>
-                  <span className="tags chron__tags">
-                    {x.tags.map((t) => (
-                      <Tag key={t}>{t}</Tag>
-                    ))}
-                  </span>
-                </span>
-                <span className="chron__toggle t-mono">{isOpen ? '− Details' : '+ Details'}</span>
-              </button>
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    className="chron__body"
-                    initial={reducedMotion ? false : { height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                <img src={charaUrl(e.portrait)} alt="" />
+              </motion.div>
+            </AnimatePresence>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={e.id}
+                className="ch__ghost t-num"
+                initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, transition: { duration: 0.14 } }}
+                transition={{ duration: 0.5, ease }}
+              >
+                {num}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* ── index ────────────────────────────────────────────────────── */}
+        <nav className="ch__index" aria-label="Records">
+          {entries.map((x, i) => {
+            const on = i === index
+            return (
+              <button
+                key={x.id}
+                className={`idx ${on ? 'is-active' : ''}`}
+                style={{ '--col': x.paint } as CSSProperties}
+                onPointerMove={() => setIndex(i)}
+                onClick={() => setIndex(i)}
+                aria-pressed={on}
+                aria-label={`${x.role}, ${x.org}`}
+              >
+                {on && (
+                  <motion.span
+                    layoutId="ch-idx-mark"
+                    className="idx__mark"
+                    aria-hidden="true"
+                    transition={{ duration: reducedMotion ? 0 : 0.35, ease }}
                   >
-                    <ul className="chron__details t-ui">
-                      {x.details.map((d) => (
-                        <li key={d}>{d}</li>
-                      ))}
-                    </ul>
-                  </motion.div>
+                    <Splat color={x.paint} seed={i + 2} />
+                  </motion.span>
                 )}
-              </AnimatePresence>
+                <span className="idx__num t-num">{String(i + 1).padStart(2, '0')}</span>
+                <span className="idx__text">
+                  <span className="idx__org">{x.org}</span>
+                  <span className="idx__period t-mono">{x.period}</span>
+                </span>
+              </button>
+            )
+          })}
+        </nav>
+
+        {/* ── dossier ──────────────────────────────────────────────────── */}
+        <div className="ch__main" aria-live="polite">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.article
+              key={e.id}
+              className="dos"
+              initial={reducedMotion ? false : { opacity: 0, x: 40, skewX: -3 }}
+              animate={{ opacity: 1, x: 0, skewX: 0 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -24, transition: { duration: 0.16 } }}
+              transition={{ duration: 0.38, ease }}
+            >
+              <span className="dos__kicker t-mono">
+                Record {num} · {kindLabel[e.kind]} · {e.location}
+              </span>
+
+              <h2 className="dos__role t-hero">
+                <span className="dos__role-splat" aria-hidden="true">
+                  <Splat color={e.paint} seed={index + 4} />
+                  <Splat color={e.paint} seed={index + 9} className="splat--second" />
+                </span>
+                <span className="dos__role-text">{e.role}</span>
+              </h2>
+              <p className="dos__org">{e.org}</p>
+
+              {/* stat band */}
+              <div className="dos__stats">
+                <div className="dstat">
+                  <span className="t-label">Period</span>
+                  <span className="dstat__val t-num">{e.period}</span>
+                </div>
+                <div className="dstat">
+                  <span className="t-label">Duration</span>
+                  <span className="dstat__val t-num">
+                    {dur.value} <small>{dur.unit}</small>
+                  </span>
+                </div>
+                <div className="dstat">
+                  <span className="t-label">Kind</span>
+                  <span className="dstat__val dstat__val--ui">{kindLabel[e.kind]}</span>
+                </div>
+              </div>
+
+              <p className="dos__summary t-body">{e.summary}</p>
+
+              <div className="dos__duties">
+                <span className="t-label">Duties</span>
+                <ol>
+                  {e.duties.map((d, k) => (
+                    <motion.li
+                      key={d}
+                      initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.16 + k * 0.05, duration: 0.3, ease }}
+                    >
+                      <span className="dos__duty-num t-num">{String(k + 1).padStart(2, '0')}</span>
+                      <span className="t-ui">{d}</span>
+                    </motion.li>
+                  ))}
+                </ol>
+              </div>
+
+              <div className="tags dos__tags">
+                {e.tech.map((t) => (
+                  <Tag key={t}>{t}</Tag>
+                ))}
+              </div>
             </motion.article>
-          )
-        })}
+          </AnimatePresence>
+        </div>
       </div>
     </Screen>
   )
