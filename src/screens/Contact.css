@@ -1,0 +1,375 @@
+/* ─────────────────────────────────────────────────────────
+   CONTACT — letter (left) · channels (right) · signature (bottom)
+   ───────────────────────────────────────────────────────── */
+
+.contact .screen__body {
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+.ct {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 2vh clamp(24px, 3vw, 64px);
+}
+
+/* ── letter ────────────────────────────────────────────────────────────── */
+
+.letter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6vh;
+  min-height: 0;
+  padding: 2.4vh 2vw 2vh;
+  color: var(--ink);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E"),
+    linear-gradient(170deg, #f3ebd8 0%, #e9dfc8 100%);
+  clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 26px 100%, 0 calc(100% - 26px));
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+  transform: rotate(-0.6deg);
+}
+.letter .t-label {
+  color: rgba(20, 16, 16, 0.6);
+}
+.letter__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1.2vh;
+  border-bottom: 2px solid var(--ink);
+}
+.letter__to {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.letter__addr {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: 'opsz' 60;
+  font-size: clamp(1.6rem, 4vh, 3rem);
+  line-height: 1;
+  color: var(--ink);
+}
+.letter__stamp {
+  padding: 6px 12px;
+  border: 2px solid var(--red);
+  color: var(--red) !important;
+  letter-spacing: 0.3em;
+  transform: rotate(6deg);
+}
+.letter__field {
+  display: grid;
+  grid-template-columns: clamp(64px, 6vw, 96px) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 1vw;
+  padding-bottom: 0.6vh;
+  border-bottom: 1px solid rgba(20, 16, 16, 0.3);
+}
+.letter__field input,
+.letter__field textarea {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-stretch: 80%;
+  font-size: clamp(1rem, 2.1vh, 1.45rem);
+  line-height: 1.4;
+  resize: none;
+}
+.letter__field input::placeholder,
+.letter__field textarea::placeholder {
+  color: rgba(20, 16, 16, 0.38);
+}
+.letter__field--grow {
+  flex: 1;
+  min-height: 0;
+  align-items: start;
+  border-bottom: 0;
+  background-image: repeating-linear-gradient(180deg, transparent 0, transparent calc(2.1em - 1px), rgba(20, 16, 16, 0.18) calc(2.1em - 1px), rgba(20, 16, 16, 0.18) 2.1em);
+  background-size: 100% 2.1em;
+  background-position: 0 0.35em;
+}
+.letter__field--grow textarea {
+  height: 100%;
+  min-height: 12vh;
+  line-height: 2.1em;
+  font-size: clamp(1rem, 2vh, 1.4rem);
+}
+.letter__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1vw;
+  padding-top: 1vh;
+}
+.letter__ways {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.letter__hint {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 16, 0.55);
+}
+.letter__alt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.letter__alt-or {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(20, 16, 16, 0.55);
+  margin-right: 4px;
+}
+.letter__alt a,
+.letter__alt button {
+  padding: 4px 10px;
+  font-family: var(--font-ui);
+  font-stretch: 70%;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: clamp(0.66rem, 1.3vh, 0.85rem);
+  color: var(--ink);
+  text-decoration: none;
+  border: 1px solid rgba(20, 16, 16, 0.45);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast),
+    color var(--dur-fast);
+}
+.letter__alt a:hover,
+.letter__alt button:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+.letter__send:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+.letter__send {
+  position: relative;
+  isolation: isolate;
+  margin-right: 1.4vw;
+  padding: 1.2vh 2.2vw;
+  font-family: var(--font-ui);
+  font-stretch: 68%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: clamp(0.9rem, 2vh, 1.4rem);
+  color: var(--cream);
+  text-shadow: 0.05em 0.05em 0 var(--ink);
+  transition: transform var(--dur-fast);
+}
+.letter__send:hover {
+  transform: scale(1.04);
+}
+.letter__send-splat {
+  position: absolute;
+  inset: 0 -6%;
+  z-index: 0;
+}
+.letter__send-splat .splat {
+  inset: -30% 0;
+  width: 100%;
+  height: 160%;
+}
+.letter__send-text {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── channels ──────────────────────────────────────────────────────────── */
+
+.ct__channels {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.4vh;
+  min-height: 0;
+}
+.ct__channels-head {
+  padding: 0 0.6vw 1vh;
+  border-bottom: 1px solid var(--line-faint);
+  margin-bottom: 0.6vh;
+}
+.chan {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: 1vw;
+  padding: 1.1vh 1vw 1.1vh 0.6vw;
+  color: var(--fg-dim);
+  text-decoration: none;
+  isolation: isolate;
+  transition:
+    color var(--dur),
+    transform var(--dur) var(--ease-out);
+}
+.chan:hover {
+  color: var(--cream);
+}
+.chan__mark {
+  position: absolute;
+  inset: -6% 1% -6% -2%;
+  z-index: 0;
+}
+.chan__num {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(1.8rem, 4.6vh, 3.4rem);
+  line-height: 1;
+  color: var(--cream);
+  min-width: 2.2ch;
+}
+.chan__text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.chan__label {
+  font-family: var(--font-ui);
+  font-stretch: 68%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: clamp(1rem, 2.3vh, 1.65rem);
+  line-height: 1;
+  color: var(--cream);
+  text-shadow: 0.05em 0.05em 0 var(--ink);
+}
+.chan__handle {
+  font-size: clamp(0.62rem, 1.25vh, 0.85rem);
+  letter-spacing: 0.12em;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chan__note {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-ui);
+  font-stretch: 70%;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: clamp(0.65rem, 1.35vh, 0.95rem);
+  white-space: nowrap;
+}
+.chan__arrow {
+  position: relative;
+  z-index: 1;
+  font-size: 1rem;
+  opacity: 0;
+  transition: opacity var(--dur);
+}
+.chan.is-active {
+  color: var(--ink);
+  transform: translateX(6px);
+}
+.chan.is-active .chan__num,
+.chan.is-active .chan__label {
+  color: var(--ink);
+  text-shadow: 0.03em 0.03em 0 var(--cream);
+}
+.chan.is-active .chan__handle,
+.chan.is-active .chan__note {
+  color: var(--ink);
+  opacity: 1;
+}
+.chan.is-active .chan__arrow {
+  opacity: 1;
+}
+
+/* ── signature ─────────────────────────────────────────────────────────── */
+
+.ct__sign {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2vw;
+  padding: 1.4vh 0 1.6vh;
+  border-top: 1px solid var(--line-faint);
+}
+.ct__sign-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.ct__sign-name {
+  font-size: clamp(2rem, 6vh, 4.6rem);
+  line-height: 0.9;
+  transform: scaleX(1.18);
+  transform-origin: left center;
+  white-space: nowrap;
+  text-shadow: 0.03em 0.03em 0 var(--ink);
+}
+.ct__sign-line {
+  font-size: clamp(0.85rem, 1.7vh, 1.15rem);
+  color: var(--fg-dim);
+  text-align: right;
+}
+
+/* ── responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  .ct {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .letter {
+    transform: none;
+  }
+  .ct__sign {
+    grid-template-columns: 1fr;
+    gap: 0.6vh;
+  }
+  .ct__sign-line {
+    text-align: left;
+  }
+}
+
+@media (max-width: 760px) {
+  .contact .screen__body {
+    overflow-y: auto;
+  }
+  .ct {
+    height: auto;
+  }
+  .letter__field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .chan {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .chan__note {
+    display: none;
+  }
+  .ct__sign-name {
+    font-size: clamp(1.8rem, 9vw, 3rem);
+  }
+}
