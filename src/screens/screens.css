@@ -48,43 +48,6 @@
   color: var(--fg-dim);
 }
 
-/* ── Profile ───────────────────────────────────────────────────────────── */
-
-.profile__hero {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.profile__quote {
-  position: relative;
-  max-width: 34ch;
-  font-size: clamp(1.15rem, 1.8vw, 1.5rem);
-  line-height: 1.35;
-  padding-left: 18px;
-  border-left: 3px solid var(--red);
-}
-.profile__bio {
-  max-width: 52ch;
-  color: var(--fg-dim);
-}
-.profile__sheet {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 24px;
-}
-.profile__sheet .field {
-  margin: 0;
-}
-.profile__sheet .field--full {
-  grid-column: 1 / -1;
-}
-
-@media (max-width: 760px) {
-  .profile__sheet {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* ── Contact ───────────────────────────────────────────────────────────── */
 
 .contact__lead {
