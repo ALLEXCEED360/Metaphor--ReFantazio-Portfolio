@@ -85,47 +85,6 @@
   }
 }
 
-/* ── Research ──────────────────────────────────────────────────────────── */
-
-.res__title {
-  font-size: clamp(40px, 6vw, 96px);
-  line-height: 0.9;
-}
-.res__sub {
-  font-size: 1.05rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
-  margin-top: 10px;
-  max-width: 40ch;
-}
-.res__dataset {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.res__num {
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  line-height: 1;
-}
-.res__arrow {
-  color: var(--red-hot);
-  font-size: 1.4rem;
-}
-.res__status {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.res__dot {
-  width: 8px;
-  height: 8px;
-  background: var(--gold);
-  transform: rotate(45deg);
-  animation: boot-pulse 1.6s ease-in-out infinite;
-}
-
 /* ── Archive ───────────────────────────────────────────────────────────── */
 
 .arch__filters {
