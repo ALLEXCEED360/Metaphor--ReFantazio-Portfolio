@@ -14,7 +14,8 @@ import { experience } from '../data/experience'
 import { archive } from '../data/archive'
 import './MainMenu.css'
 
-const KEY = 'aryan-portfolio:menu-cursor'
+export const MENU_CURSOR_KEY = 'aryan-portfolio:menu-cursor'
+const KEY = MENU_CURSOR_KEY
 
 /* one line per entry, counted from the data */
 const briefs: Record<string, string> = {
@@ -172,8 +173,11 @@ export function MainMenu() {
     count: mainMenu.length,
     initial: active,
     onSelect: (i) => go(mainMenu[i].path, { word: mainMenu[i].label }),
-    // Backspace / Esc → back to the title screen
-    onBack: () => go('/'),
+    // Backspace / Esc → back to the title screen; the cursor starts fresh from there
+    onBack: () => {
+      sessionStorage.removeItem(KEY)
+      go('/')
+    },
   })
   const first = useRef(true)
   useEffect(() => {

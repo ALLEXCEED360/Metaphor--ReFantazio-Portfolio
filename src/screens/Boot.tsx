@@ -5,6 +5,7 @@ import { Flick } from '../components/Splat'
 import { useNav } from '../app/router'
 import { sfx } from '../app/audio'
 import { startMusic } from '../app/music'
+import { MENU_CURSOR_KEY } from './MainMenu'
 import { useSettings } from '../app/settings'
 import { useIsMobile } from '../hooks/useMedia'
 import { profile } from '../data/profile'
@@ -30,6 +31,7 @@ export function Boot() {
     const start = () => {
       sfx.begin()
       startMusic()
+      sessionStorage.removeItem(MENU_CURSOR_KEY) // the menu opens on its first entry after the title
       go('/menu', { word: 'Begin' })
     }
     const onKey = (e: KeyboardEvent) => {
