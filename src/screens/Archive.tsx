@@ -36,6 +36,8 @@ export function Archive() {
   })
   const p = archive[index]
   const col = collectionOf(p.collection)
+  // phones: a piece opens its link only on a second tap, after a first tap has shown it in the viewer
+  const [tapped, setTapped] = useState<string | null>(null)
 
   // position of the chosen piece inside the visible list
   const pos = Math.max(0, shown.indexOf(p))
@@ -171,17 +173,20 @@ export function Archive() {
                         <button
                           data-id={x.id}
                           className={`piece ${on ? 'is-active' : ''}`}
-                          onPointerMove={() => {
+                          onPointerMove={(e) => {
+                            if (e.pointerType !== 'mouse') return
                             if (!on) sfx.tick()
                             setIndex(i)
                           }}
                           onClick={() => {
-                            if (on) {
+                            if (on && (!isMobile || tapped === x.id)) {
                               sfx.confirm()
                               window.open(x.link, '_blank', 'noreferrer')
                               return
                             }
+                            if (!on) sfx.tick()
                             setIndex(i)
+                            setTapped(x.id)
                             // on a phone the viewer sits above the grid: bring it back into view
                             if (isMobile) document.querySelector('.stage__body')?.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })
                           }}

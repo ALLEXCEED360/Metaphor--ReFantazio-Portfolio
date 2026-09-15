@@ -75,7 +75,7 @@ export function KeyGlyph({ k }: { k: string }) {
 
 /* ── Back button (top-right, "◁ Back") ──────────────────────────────────── */
 
-function BackButton({ label = 'Back', onClick }: { label?: string; onClick?: () => void }) {
+export function BackButton({ label = 'Back', onClick }: { label?: string; onClick?: () => void }) {
   const { back } = useNav()
   return (
     <button className="backbtn t-ui" onClick={onClick ?? back} aria-label={label}>

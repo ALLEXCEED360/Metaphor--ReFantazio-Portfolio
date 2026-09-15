@@ -431,7 +431,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .jy {
     grid-template-columns: 1fr;
   }

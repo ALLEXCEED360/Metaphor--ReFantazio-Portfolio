@@ -1,4 +1,4 @@
-import { useRef, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type TouchEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Background, charaUrl } from '../components/Background'
 import { ScreenTitle } from '../components/ScreenTitle'
@@ -29,12 +29,29 @@ export function Abilities() {
   const { index, setIndex } = useKeyNav({
     count: N,
     axis: 'both',
-    initial: (() => {
-      return 0
-    })(),
+    initial: 0,
     onBack: () => go('/menu'),
   })
   const c = skillCategories[index]
+
+  // phones swap the portrait per discipline: fetch them all up front so a turn never waits
+  useEffect(() => {
+    if (!isMobile) return
+    for (const x of skillCategories) new Image().src = charaUrl(x.portrait)
+  }, [isMobile])
+
+  // phones: a horizontal swipe across the wheel turns it one step
+  const touchX = useRef<number | null>(null)
+  const onTouchStart = (e: TouchEvent) => {
+    touchX.current = e.touches[0].clientX
+  }
+  const onTouchEnd = (e: TouchEvent) => {
+    if (touchX.current == null) return
+    const dx = e.changedTouches[0].clientX - touchX.current
+    touchX.current = null
+    if (Math.abs(dx) < 40) return
+    setIndex((index + (dx < 0 ? 1 : N - 1)) % N)
+  }
 
   return (
     <Screen
@@ -56,8 +73,8 @@ export function Abilities() {
         />
 
         {/* ── wheel ─────────────────────────────────────────────────────── */}
-        <div className="ab__wheel-wrap">
-          <Wheel index={index} onPick={setIndex} reduced={reducedMotion} />
+        <div className="ab__wheel-wrap" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <Wheel index={index} onPick={setIndex} reduced={reducedMotion} compact={isMobile} />
         </div>
 
         {/* ── panel ─────────────────────────────────────────────────────── */}
@@ -122,7 +139,7 @@ export function Abilities() {
 }
 
 /** the ring: N annular sectors, the active one turned to the top */
-function Wheel({ index, onPick, reduced }: { index: number; onPick: (i: number) => void; reduced: boolean }) {
+function Wheel({ index, onPick, reduced, compact }: { index: number; onPick: (i: number) => void; reduced: boolean; compact: boolean }) {
   const R = 170
   const r = 112
   const gap = 3
@@ -148,8 +165,19 @@ function Wheel({ index, onPick, reduced }: { index: number; onPick: (i: number) 
   const rotation = rot.current.angle
   const active = skillCategories[index]
 
+  // the ring's rendered size, so the names can be placed with transforms
+  const ref = useRef<HTMLDivElement>(null)
+  const [size, setSize] = useState(0)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const ro = new ResizeObserver(([entry]) => setSize(entry.contentRect.width))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
   return (
-    <div className="wheel">
+    <div className="wheel" ref={ref}>
       <motion.svg viewBox="0 0 400 400" className="wheel__svg" animate={{ rotate: rotation }} transition={{ duration: reduced ? 0 : 0.6, ease }}>
         <circle cx="200" cy="200" r="192" className="wheel__hair" />
         <circle cx="200" cy="200" r="184" className="wheel__hair wheel__hair--dash" />
@@ -196,22 +224,20 @@ function Wheel({ index, onPick, reduced }: { index: number; onPick: (i: number) 
       {/* names sit around the ring, always upright; they glide as it turns */}
       {skillCategories.map((x, i) => {
         const ang = ((-90 + (i - index) * STEP) * Math.PI) / 180
-        const rad = 58
-        const left = 50 + rad * Math.cos(ang)
-        const top = 50 + rad * Math.sin(ang)
+        const rad = size * (compact ? 0.55 : 0.58)
         const on = i === index
         return (
-          <motion.button
+          <motion.div
             key={x.id}
-            className={`wheel__name ${on ? 'is-active' : ''}`}
-            style={{ color: on ? x.paint : undefined }}
-            animate={{ left: `${left}%`, top: `${top}%` }}
+            className="wheel__name-pos"
+            initial={false}
+            animate={{ x: rad * Math.cos(ang), y: rad * Math.sin(ang) }}
             transition={{ duration: reduced ? 0 : 0.6, ease }}
-            onClick={() => onPick(i)}
-            aria-pressed={on}
           >
-            {x.short}
-          </motion.button>
+            <button className={`wheel__name ${on ? 'is-active' : ''}`} style={{ color: on ? x.paint : undefined }} onClick={() => onPick(i)} aria-pressed={on}>
+              {x.short}
+            </button>
+          </motion.div>
         )
       })}
       <span className="wheel__marker" aria-hidden="true" />

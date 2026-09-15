@@ -545,7 +545,7 @@
 
 /* ── mobile ────────────────────────────────────────────────────────────── */
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .quests .screen__body {
     overflow-y: auto;
   }
@@ -622,5 +622,41 @@
   }
   .qb__drawer {
     width: 100vw;
+  }
+}
+
+/* a phone on its side: the card stands on the left, pager and brief beside it */
+@media (max-height: 500px) and (orientation: landscape) {
+  .qb {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'hand pager'
+      'hand brief';
+    align-items: start;
+    gap: 10px 18px;
+  }
+  .card {
+    --card-h: clamp(220px, 68vh, 300px);
+  }
+  .card--side {
+    --card-h: clamp(200px, 62vh, 280px);
+  }
+  .qb__hand {
+    grid-area: hand;
+    height: clamp(230px, 72vh, 316px);
+    width: calc(clamp(220px, 68vh, 300px) * 0.7 + 16px);
+    margin: 0;
+    padding: 0;
+  }
+  .qb__pager {
+    grid-area: pager;
+    justify-content: flex-start;
+  }
+  .brief {
+    grid-area: brief;
+  }
+  .view__title {
+    font-size: 26px;
   }
 }

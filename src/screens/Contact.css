@@ -352,7 +352,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .contact .screen__body {
     overflow-y: auto;
   }
@@ -370,19 +370,52 @@
     grid-template-columns: 1fr;
     gap: 4px;
   }
-  .letter__field--grow textarea {
-    min-height: 18vh;
+  /* the label sits above the textarea here, so the ruled lines move onto the
+     textarea itself and scroll with what is written */
+  .letter__field--grow {
+    background: none;
   }
-  /* the foot stacks: hint and alternatives first, the send button full width */
+  .letter__field--grow textarea {
+    min-height: calc(2.1em * 4);
+    padding: 0;
+    background-image: repeating-linear-gradient(180deg, transparent 0, transparent calc(2.1em - 1px), rgba(20, 16, 16, 0.18) calc(2.1em - 1px), rgba(20, 16, 16, 0.18) 2.1em);
+    background-size: 100% 2.1em;
+    background-attachment: local;
+  }
+  /* the foot stacks: hint, three equal chips, then the send button full width */
   .letter__foot {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
+  .letter__ways {
+    gap: 8px;
+  }
+  .letter__hint {
+    letter-spacing: 0.1em;
+    line-height: 1.5;
+  }
+  .letter__alt {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .letter__alt-or,
+  .letter__alt-long {
+    display: none;
+  }
+  .letter__alt a,
+  .letter__alt button {
+    padding: 8px 4px;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 0.7rem;
+  }
   .letter__send {
     margin-right: 0;
-    padding: 1.6vh 0;
+    padding: 14px 0;
     text-align: center;
+    font-size: 1rem;
   }
   .letter__send-splat {
     inset: 0 -2%;
@@ -403,5 +436,29 @@
     font-size: clamp(1.6rem, 7.5vw, 2.6rem);
     transform: none;
     white-space: normal;
+  }
+}
+
+/* a phone on its side: letter and channels side by side */
+@media (max-height: 500px) and (orientation: landscape) {
+  .ct {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+    column-gap: 18px;
+  }
+  .ct__sign {
+    grid-column: 1 / -1;
+  }
+  .letter {
+    padding: 14px 18px 16px;
+    gap: 10px;
+  }
+  .letter__field--grow textarea {
+    min-height: calc(2.1em * 3);
+  }
+  .letter__send {
+    padding: 12px 0;
+    font-size: 0.9rem;
   }
 }

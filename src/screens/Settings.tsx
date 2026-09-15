@@ -171,7 +171,7 @@ export function Settings() {
                 key={r.key}
                 className={`opt ${on ? 'is-active' : ''} ${r.disabled ? 'is-disabled' : ''}`}
                 style={{ '--col': r.paint } as CSSProperties}
-                onPointerMove={() => setIndex((cur) => (cur === i ? cur : (sfx.tick(), i)))}
+                onPointerMove={(e) => e.pointerType === 'mouse' && setIndex((cur) => (cur === i ? cur : (sfx.tick(), i)))}
                 {...rise(i)}
               >
                 <span className="opt__num t-num">{String(i + 1).padStart(2, '0')}</span>
@@ -211,7 +211,7 @@ export function Settings() {
           })}
 
           {/* actions */}
-          <motion.section className={`opt opt--actions ${index === ACTIONS ? 'is-active' : ''}`} onPointerMove={() => setIndex((cur) => (cur === ACTIONS ? cur : (sfx.tick(), ACTIONS)))} {...rise(rows.length)}>
+          <motion.section className={`opt opt--actions ${index === ACTIONS ? 'is-active' : ''}`} onPointerMove={(e) => e.pointerType === 'mouse' && setIndex((cur) => (cur === ACTIONS ? cur : (sfx.tick(), ACTIONS)))} {...rise(rows.length)}>
             <span className="opt__num t-num">{String(rows.length + 1).padStart(2, '0')}</span>
             <div className="opt__text">
               <h3 className="opt__label">Memory</h3>

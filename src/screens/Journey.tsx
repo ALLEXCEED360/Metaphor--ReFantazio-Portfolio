@@ -86,7 +86,7 @@ export function Journey() {
               >
                 <button
                   className="jy__btn"
-                  onPointerMove={() => setIndex(i)}
+                  onPointerMove={(e) => e.pointerType === 'mouse' && setIndex(i)}
                   onClick={() => {
                     setIndex(i)
                     if (isMobile) setOpen(open === x.id ? null : x.id)

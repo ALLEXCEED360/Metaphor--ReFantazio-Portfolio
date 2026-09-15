@@ -130,7 +130,7 @@ export function Profile() {
                 key={row.id}
                 className={`led ${on ? 'is-active' : ''}`}
                 style={{ '--col': row.paint } as CSSProperties}
-                onPointerMove={() => setIndex(i)}
+                onPointerMove={(e) => e.pointerType === 'mouse' && setIndex(i)}
                 onClick={() => go(row.path, { word: row.word })}
                 aria-pressed={on}
               >

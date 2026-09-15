@@ -318,7 +318,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .chronicle .screen__body {
     overflow-y: auto;
   }

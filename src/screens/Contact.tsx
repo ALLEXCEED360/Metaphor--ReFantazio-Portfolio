@@ -149,7 +149,7 @@ export function Contact() {
                   Outlook
                 </a>
                 <button type="button" onClick={copy}>
-                  Copy the letter
+                  Copy<span className="letter__alt-long"> the letter</span>
                 </button>
               </span>
             </div>
@@ -175,7 +175,7 @@ export function Contact() {
                 href={c.href}
                 target={c.href.startsWith('http') ? '_blank' : undefined}
                 rel="noreferrer"
-                onPointerMove={() => setIndex(i)}
+                onPointerMove={(e) => e.pointerType === 'mouse' && setIndex(i)}
                 aria-current={on}
               >
                 {on && (

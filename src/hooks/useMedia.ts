@@ -14,5 +14,6 @@ export function useMedia(query: string): boolean {
   return matches
 }
 
-export const useIsMobile = () => useMedia('(max-width: 760px)')
+/** phones: portrait, or a short landscape viewport (a phone turned sideways) */
+export const useIsMobile = () => useMedia('(max-width: 760px), (max-height: 500px) and (orientation: landscape)')
 export const useFinePointer = () => useMedia('(pointer: fine)')

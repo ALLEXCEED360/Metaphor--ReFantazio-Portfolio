@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Hints } from '../components/ui'
+import { Hints, BackButton } from '../components/ui'
 import { useNav } from '../app/router'
 import { useSettings } from '../app/settings'
 import { useKeyNav } from '../hooks/useKeyNav'
@@ -169,15 +169,16 @@ export function MainMenu() {
     const saved = Number.isFinite(q) && window.location.search.includes('sel=') ? q : Number(sessionStorage.getItem(KEY))
     return Number.isFinite(saved) && saved >= 0 && saved < mainMenu.length ? saved : 0
   })
+  // Backspace / Esc (or the phone's Title button) → back to the title screen; the cursor starts fresh from there
+  const toTitle = () => {
+    sessionStorage.removeItem(KEY)
+    go('/')
+  }
   const { index, setIndex } = useKeyNav({
     count: mainMenu.length,
     initial: active,
     onSelect: (i) => go(mainMenu[i].path, { word: mainMenu[i].label }),
-    // Backspace / Esc → back to the title screen; the cursor starts fresh from there
-    onBack: () => {
-      sessionStorage.removeItem(KEY)
-      go('/')
-    },
+    onBack: toTitle,
   })
   const first = useRef(true)
   useEffect(() => {
@@ -226,6 +227,9 @@ export function MainMenu() {
         <span className="mnav__name t-ui-bold" aria-hidden="true">
           {profile.name}
         </span>
+        <div className="mnav__back">
+          <BackButton label="Title" onClick={toTitle} />
+        </div>
       </motion.div>
     )
   }
@@ -299,7 +303,7 @@ export function MainMenu() {
               }
               animate={{ opacity: 1, x: '-100%', y: '-72%', rotate: p.angle, fontSize: p.size }}
               transition={{ duration: reducedMotion ? 0 : 0.42, delay: first.current ? 0.04 * i : 0, ease }}
-              onPointerMove={() => setIndex(i)}
+              onPointerMove={(e) => e.pointerType === 'mouse' && setIndex(i)}
               onFocus={() => setIndex(i)}
               onClick={() => {
                 setIndex(i)

@@ -115,7 +115,7 @@ export function Chronicle() {
                 key={x.id}
                 className={`idx ${on ? 'is-active' : ''}`}
                 style={{ '--col': x.paint } as CSSProperties}
-                onPointerMove={() => setIndex(i)}
+                onPointerMove={(e) => e.pointerType === 'mouse' && setIndex(i)}
                 onClick={() => setIndex(i)}
                 aria-pressed={on}
                 aria-label={`${x.role}, ${x.org}`}

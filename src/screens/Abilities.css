@@ -103,8 +103,20 @@
   stroke-width: 6px;
 }
 
+.wheel__name-pos {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  display: grid;
+  place-items: center;
+  will-change: transform;
+}
 .wheel__name {
   position: absolute;
+  left: 0;
+  top: 0;
   transform: translate(-50%, -50%);
   font-family: var(--font-ui);
   font-stretch: var(--ui-stretch);
@@ -276,7 +288,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .abilities .screen__body {
     overflow-y: auto;
   }
@@ -285,8 +297,24 @@
     height: auto;
   }
   .wheel {
-    width: min(74vw, 44vh);
+    width: min(64vw, 40vh);
     margin: 4vh auto 5vh;
+  }
+  /* no filters on the turning ring: cheap to composite on phones */
+  .wheel__sector path {
+    transition: opacity var(--dur) ease;
+  }
+  .wheel__sector.is-active path {
+    filter: none;
+  }
+  .wheel__name {
+    padding: 8px 6px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+  .wheel__name.is-active {
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
   }
   .ab__panel {
     overflow: visible;
@@ -301,3 +329,55 @@
     grid-auto-rows: auto;
   }
 }
+
+/* a phone on its side: the desktop arrangement, wheel left and the tool
+   panel scrolling beside it, sized to the short screen */
+@media (max-height: 500px) and (orientation: landscape) {
+  .abilities .screen__body {
+    overflow: hidden;
+  }
+  .ab {
+    height: 100%;
+    grid-template-columns: minmax(200px, 34vw) minmax(0, 1fr);
+    gap: 0 24px;
+  }
+  .wheel {
+    width: min(84%, 66vh);
+    margin: 0;
+  }
+  .wheel__initial {
+    font-size: 120px;
+  }
+  .ab__panel {
+    overflow-y: auto;
+    padding: 4px 4px 24px 0;
+    -webkit-mask-image: linear-gradient(180deg, #000 88%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 88%, transparent 100%);
+  }
+  .ab__panel-inner {
+    gap: 8px;
+  }
+  .ab__kicker {
+    font-size: 0.62rem;
+  }
+  .ab__title {
+    font-size: clamp(26px, 9vh, 36px);
+  }
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    gap: 6px 8px;
+  }
+  .tile {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .tile__name {
+    font-size: 0.95rem;
+  }
+  .tile__mark {
+    width: 8px;
+    height: 8px;
+  }
+}
+

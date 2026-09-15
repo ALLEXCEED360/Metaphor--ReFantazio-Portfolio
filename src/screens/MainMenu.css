@@ -222,7 +222,7 @@
 /* ── mobile: the plate is cropped to the face; the wheel is scaled the
       same way so the words still sit on the paint ─────────────────────── */
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .menu--mobile .menu__bg {
     background-position: 62% center;
   }
@@ -289,5 +289,46 @@
     letter-spacing: 0.32em;
     text-transform: uppercase;
     color: var(--fg-dim);
+  }
+  .mnav__back {
+    position: absolute;
+    right: var(--gutter);
+    bottom: calc(var(--safe-bottom) + 8px);
+  }
+  .mnav__back .backbtn {
+    font-size: 0.8rem;
+    padding: 7px 14px 7px 11px;
+    background: rgba(10, 9, 9, 0.6);
+  }
+}
+
+/* a phone on its side: two columns so all nine fit without scrolling */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mnav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: min-content;
+    align-content: center;
+    gap: 2px 6vw;
+    padding: calc(var(--safe-top) + 8px) var(--gutter) 40px;
+  }
+  .mnav__item {
+    padding: 3px 8px 3px 0;
+  }
+  .mnav__word {
+    font-size: clamp(18px, 6.2vh, 26px);
+  }
+  .mnav__hint {
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
+  }
+  .mnav__num {
+    font-size: 0.8rem;
+  }
+  .mnav__name {
+    bottom: calc(var(--safe-bottom) + 10px);
+  }
+  .mnav__back {
+    bottom: calc(var(--safe-bottom) + 4px);
   }
 }

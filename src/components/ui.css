@@ -265,7 +265,7 @@
   display: none;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .flow {
     flex-direction: column;
     gap: 6px;
@@ -274,5 +274,21 @@
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 50% 100%, 0 calc(100% - 10px));
     margin-right: 0;
     padding-bottom: 16px;
+  }
+}
+
+/* a phone on its side: tighter head and foot so the body keeps most of the height */
+@media (max-height: 500px) and (orientation: landscape) {
+  .screen__head {
+    min-height: 0;
+    padding-bottom: 6px;
+  }
+  .screen__foot {
+    padding-top: 6px;
+    padding-bottom: calc(var(--safe-bottom) + 6px);
+  }
+  .backbtn {
+    padding: 6px 14px 6px 11px;
+    font-size: 0.8rem;
   }
 }

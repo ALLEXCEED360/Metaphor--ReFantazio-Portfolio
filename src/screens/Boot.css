@@ -131,7 +131,7 @@
   z-index: 2;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .boot__first,
   .boot__last {
     /* the letters are stretched 1.32× by the entrance, so size for the width */
@@ -147,5 +147,21 @@
   }
   .boot__dot {
     display: none;
+  }
+}
+
+/* a phone on its side: the name sized to the height, the banner back on one line */
+@media (max-height: 500px) and (orientation: landscape) {
+  .boot__first,
+  .boot__last {
+    font-size: clamp(28px, 13vh, 52px);
+  }
+  .boot__titles {
+    flex-direction: row;
+    gap: 14px;
+    letter-spacing: 0.18em;
+  }
+  .boot__dot {
+    display: inline-block;
   }
 }

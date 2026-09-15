@@ -75,7 +75,7 @@ export function Research() {
                 key={c.id}
                 className={`tab ${on ? "is-active" : ""}`}
                 style={{ "--col": c.paint } as CSSProperties}
-                onPointerMove={() => setIndex(i)}
+                onPointerMove={(e) => e.pointerType === 'mouse' && setIndex(i)}
                 onClick={() => setIndex(i)}
                 aria-pressed={on}
               >

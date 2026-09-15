@@ -12,7 +12,7 @@
   position: relative;
   height: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(340px, 34vw, 620px);
+  grid-template-columns: minmax(0, 1fr) clamp(380px, 40vw, 760px);
   gap: clamp(20px, 2.6vw, 56px);
 }
 
@@ -26,42 +26,36 @@
   gap: 1.2vh;
 }
 
-/* filters */
+/* filters: four boxed tiles, the count large and the collection's paint on the active one */
 .arc__filters {
-  display: flex;
-  gap: 0.4vw;
-  border-bottom: 1px solid var(--line-faint);
-  padding-bottom: 0.8vh;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5vw;
 }
 .filt {
   position: relative;
   display: flex;
-  align-items: baseline;
-  gap: 0.6vw;
-  padding: 0.6vh 1.2vw 0.6vh 0.8vw;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5vh;
+  padding: 1.1vh 1vw 1vh;
   color: var(--fg-dim);
-  transition: color var(--dur);
+  background: rgba(12, 10, 10, 0.55);
+  box-shadow: inset 0 0 0 1px var(--line-faint);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition:
+    color var(--dur),
+    background-color var(--dur),
+    box-shadow var(--dur);
 }
 .filt:hover {
   color: var(--cream);
-}
-.filt::after {
-  content: '';
-  position: absolute;
-  left: 0.8vw;
-  right: 1.2vw;
-  bottom: -0.8vh;
-  height: 3px;
-  background: var(--col);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--dur) var(--ease-out);
+  background: rgba(242, 234, 217, 0.06);
 }
 .filt.is-active {
   color: var(--cream);
-}
-.filt.is-active::after {
-  transform: scaleX(1);
+  background: rgba(242, 234, 217, 0.08);
+  box-shadow: inset 0 0 0 1px var(--col);
 }
 .filt.is-active .filt__count {
   color: var(--col);
@@ -78,6 +72,7 @@
   letter-spacing: 0.08em;
   font-size: clamp(0.8rem, 1.7vh, 1.2rem);
   text-shadow: 0.05em 0.05em 0 var(--ink);
+  line-height: 1.1;
 }
 
 /* scrolling grid */
@@ -225,24 +220,40 @@
   letter-spacing: 0.14em;
   flex: none;
 }
+/* the chosen piece: a thick paint ring with an ink keyline, a glow in the
+   collection's colour, the number as a filled chip and a paint bar under the caption */
 .piece.is-active {
   color: var(--cream);
   transform: translateY(-3px);
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--col) 70%, transparent));
 }
 .piece.is-active .piece__frame {
   box-shadow:
-    inset 0 0 0 2px var(--col),
-    0 10px 30px rgba(0, 0, 0, 0.5);
+    inset 0 0 0 3px var(--col),
+    inset 0 0 0 5px var(--ink);
 }
 .piece.is-active .piece__frame img {
   filter: saturate(1) brightness(1);
 }
 .piece.is-active .piece__num {
-  color: var(--col);
+  left: 0;
+  top: 0;
+  padding: 4px 9px 4px 8px;
+  background: var(--col);
+  color: var(--ink);
+  text-shadow: none;
   opacity: 1;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+.piece.is-active .piece__cap {
+  padding-bottom: 5px;
+  box-shadow: inset 0 -3px 0 var(--col);
+}
+.piece.is-active .piece__title {
+  color: var(--col);
 }
 .piece.is-active .piece__year {
-  color: var(--col);
+  color: var(--cream);
 }
 
 /* ── viewing panel ─────────────────────────────────────────────────────── */
@@ -362,16 +373,19 @@
 
 /* ── responsive ────────────────────────────────────────────────────────── */
 
-@media (max-width: 1200px) {
-  .arc {
-    grid-template-columns: minmax(0, 1fr) clamp(300px, 36vw, 460px);
-  }
+@media (max-width: 1500px) {
   .grp__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1200px) {
+  .arc {
+    grid-template-columns: minmax(0, 1fr) clamp(300px, 36vw, 460px);
+  }
+}
+
+@media (max-width: 760px), (max-height: 500px) and (orientation: landscape) {
   .archive .screen__body {
     overflow-y: auto;
   }
@@ -387,27 +401,16 @@
     -webkit-mask-image: none;
     mask-image: none;
   }
-  /* filters as four equal tiles */
+  /* filters as a 2×2 of tiles */
   .arc__filters {
-    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
-    border-bottom: 0;
-    padding-bottom: 0;
   }
   .filt {
-    justify-content: flex-start;
+    flex-direction: row;
+    align-items: baseline;
     gap: 8px;
     padding: 8px 10px;
-    box-shadow: inset 0 0 0 1px var(--line-faint);
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-  }
-  .filt::after {
-    display: none;
-  }
-  .filt.is-active {
-    background: rgba(242, 234, 217, 0.08);
-    box-shadow: inset 0 0 0 1px var(--col);
   }
   .filt__count {
     font-size: 1.2rem;
@@ -429,5 +432,22 @@
   }
   .view__note {
     font-size: 0.98rem;
+  }
+}
+
+/* a phone on its side: the viewer keeps to half the width, catalogue beside it */
+@media (max-height: 500px) and (orientation: landscape) {
+  .arc {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 18px;
+    align-items: start;
+  }
+  .view {
+    order: 0;
+    position: sticky;
+    top: 0;
+  }
+  .view__title {
+    font-size: 24px;
   }
 }
