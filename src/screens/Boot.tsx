@@ -49,7 +49,7 @@ export function Boot() {
   const d = (n: number) => (reducedMotion ? 0 : n)
 
   return (
-    <div className="boot" data-cursor="interactive">
+    <div className="boot">
       <Background
         art={7}
         mobileArt={1}
@@ -103,7 +103,7 @@ export function Boot() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: d(0.6), delay: d(1.4), ease }}
         >
-          {profile.titles.map((t, i) => (
+          {profile.banner.map((t, i) => (
             <span key={t}>
               {i > 0 && <span className="boot__dot" aria-hidden="true" />}
               {t}
