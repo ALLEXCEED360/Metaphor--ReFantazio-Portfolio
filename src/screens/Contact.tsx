@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { Background } from '../components/Background'
 import { ScreenTitle } from '../components/ScreenTitle'
@@ -11,7 +11,6 @@ import { profile } from '../data/profile'
 import './Contact.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
-const KEY = 'aryan-portfolio:contact'
 
 const channels = [
   { id: 'email', label: 'Email', handle: profile.links.email, href: `mailto:${profile.links.email}`, paint: '#f14352', note: 'The surest way' },
@@ -34,13 +33,11 @@ export function Contact() {
     count: channels.length,
     axis: 'both',
     initial: (() => {
-      const saved = Number(sessionStorage.getItem(KEY))
-      return Number.isFinite(saved) && saved >= 0 && saved < channels.length ? saved : 0
+      return 0
     })(),
     onSelect: (i) => window.open(channels[i].href, channels[i].href.startsWith('mailto') ? '_self' : '_blank', 'noreferrer'),
     onBack: () => go('/menu'),
   })
-  useEffect(() => sessionStorage.setItem(KEY, String(index)), [index])
 
   const [from, setFrom] = useState('')
   const [subject, setSubject] = useState('')

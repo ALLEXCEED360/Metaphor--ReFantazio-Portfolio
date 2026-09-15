@@ -43,43 +43,71 @@
 
 .hints {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 0;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
+/* a quiet prompt: the key in a thin diamond, the label in small caps,
+   hairlines between prompts. No filled tags. */
 .hint {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 5px 18px 5px 7px;
-  background: var(--cream);
-  color: var(--ink);
-  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-  font-size: 0.9rem;
+  gap: 12px;
+  padding: 4px 16px;
+  color: var(--cream);
+}
+.hint + .hint::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--line);
 }
 .hint__key {
+  position: relative;
   display: inline-grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--ink);
+  width: 18px;
+  height: 18px;
+  margin: 0 3px;
   color: var(--cream);
   font-family: var(--font-ui);
   font-stretch: normal;
   font-weight: 700;
-  font-size: 0.62rem;
+  font-size: 0.56rem;
   line-height: 1;
+}
+.hint__key::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--cream);
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 3px rgba(10, 9, 9, 0.6);
+}
+.hint__key svg,
+.hint__key > * {
+  position: relative;
 }
 .hint__key svg {
   display: block;
+  width: 11px;
+  height: 11px;
 }
 .hint__label {
   font-family: var(--font-ui);
-  font-stretch: var(--ui-stretch);
+  font-stretch: 70%;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--cream);
+  opacity: 0.92;
+  text-shadow: 0 1px 2px var(--ink);
 }
 
 /* ── Back button ───────────────────────────────────────────────────────── */
@@ -140,33 +168,6 @@
 .tag--gold {
   border-color: var(--gold);
   color: var(--gold);
-}
-
-/* ── Field ─────────────────────────────────────────────────────────────── */
-
-.field + .field {
-  margin-top: 18px;
-}
-.field__label {
-  margin-bottom: 4px;
-}
-.field__value {
-  font-size: 1.15rem;
-  line-height: 1.35;
-}
-.field__value ul li {
-  position: relative;
-  padding-left: 16px;
-}
-.field__value ul li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.58em;
-  width: 6px;
-  height: 6px;
-  background: var(--red);
-  transform: rotate(45deg);
 }
 
 /* ── Game button ───────────────────────────────────────────────────────── */
@@ -230,43 +231,6 @@
   z-index: 1;
 }
 
-/* ── Panel ─────────────────────────────────────────────────────────────── */
-
-.panel {
-  position: relative;
-  padding: 22px 24px;
-  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
-}
-.panel--ink {
-  background: rgba(14, 12, 12, 0.82);
-  color: var(--cream);
-  box-shadow: inset 0 0 0 1px var(--line-faint);
-}
-.panel--cream {
-  background: var(--cream);
-  color: var(--ink);
-}
-.panel--cream .t-label {
-  color: rgba(10, 9, 9, 0.55);
-}
-.panel__corner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 42px;
-  height: 4px;
-  background: var(--red);
-}
-.panel--accent-teal .panel__corner {
-  background: var(--teal);
-}
-.panel--accent-gold .panel__corner {
-  background: var(--gold);
-}
-.panel--accent-blue .panel__corner {
-  background: var(--blue);
-}
-
 /* ── Flow (pipeline) ───────────────────────────────────────────────────── */
 
 .flow {
@@ -310,142 +274,5 @@
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 50% 100%, 0 calc(100% - 10px));
     margin-right: 0;
     padding-bottom: 16px;
-  }
-}
-
-/* ── Rule ──────────────────────────────────────────────────────────────── */
-
-.rule {
-  position: relative;
-  height: 1px;
-  background: var(--line-faint);
-  margin: 22px 0;
-}
-.rule::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: -1px;
-  width: 64px;
-  height: 3px;
-  background: var(--red);
-}
-
-/* ── Menu list (shared by main menu, quest log, settings…) ─────────────── */
-
-.mlist {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.mitem {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 12px 18px 12px 10px;
-  text-align: left;
-  isolation: isolate;
-  color: var(--cream);
-  transition: transform var(--dur) var(--ease-out);
-}
-.mitem::after {
-  /* hairline underline like the game's menu rows */
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 8%;
-  bottom: 2px;
-  height: 1px;
-  background: var(--line-faint);
-  transition: background-color var(--dur-fast);
-}
-.mitem__tri {
-  flex: none;
-  width: 0;
-  height: 0;
-  border-top: 7px solid transparent;
-  border-bottom: 7px solid transparent;
-  border-left: 9px solid var(--cream);
-  opacity: 0.45;
-  transition:
-    opacity var(--dur-fast),
-    transform var(--dur) var(--ease-out);
-}
-.mitem__idx {
-  flex: none;
-  width: 2.2ch;
-  color: var(--fg-dim);
-  font-size: 0.85rem;
-}
-.mitem__label {
-  position: relative;
-  z-index: 1;
-  font-size: clamp(1.35rem, 2.4vw, 2rem);
-  font-weight: 600;
-  line-height: 1.05;
-  letter-spacing: 0.01em;
-  transition:
-    transform var(--dur) var(--ease-out),
-    letter-spacing var(--dur) var(--ease-out);
-}
-.mitem__hint {
-  position: relative;
-  z-index: 1;
-  margin-left: auto;
-  color: var(--fg-dim);
-  font-size: 0.8rem;
-  opacity: 0;
-  transform: translateX(-8px);
-  transition:
-    opacity var(--dur) var(--ease-out),
-    transform var(--dur) var(--ease-out);
-}
-.mitem__splat {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0;
-  transform: scaleX(0.7);
-  transform-origin: left center;
-  transition:
-    opacity var(--dur) var(--ease-out),
-    transform var(--dur) var(--ease-snap);
-  pointer-events: none;
-}
-
-.mitem.is-active {
-  transform: translateX(10px);
-}
-.mitem.is-active::after {
-  background: var(--cream);
-  right: 0;
-}
-.mitem.is-active .mitem__tri {
-  opacity: 1;
-  transform: translateX(2px) scale(1.15);
-}
-.mitem.is-active .mitem__label {
-  transform: scale(1.08);
-  transform-origin: left center;
-  letter-spacing: 0.02em;
-}
-.mitem.is-active .mitem__hint {
-  opacity: 1;
-  transform: translateX(0);
-}
-.mitem.is-active .mitem__splat {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-@media (max-width: 760px) {
-  .mitem {
-    padding: 16px 12px 16px 8px;
-  }
-  .mitem__hint {
-    display: none;
   }
 }

@@ -112,20 +112,3 @@ export function useKeyNav({
 
   return { index, setIndex: pick }
 }
-
-/** Escape / Backspace → back, for screens without a list */
-export function useBackKey(onBack: () => void, enabled = true) {
-  useEffect(() => {
-    if (!enabled) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' || e.key === 'Backspace') {
-        const target = e.target as HTMLElement | null
-        if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return
-        e.preventDefault()
-        onBack()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onBack, enabled])
-}

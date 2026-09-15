@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from 'react'
+import { type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Background, charaUrl } from '../components/Background'
 import { ScreenTitle } from '../components/ScreenTitle'
@@ -12,7 +12,6 @@ import { experience, kindLabel, type Experience } from '../data/experience'
 import './Chronicle.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
-const KEY = 'aryan-portfolio:chronicle'
 
 // newest first
 const entries = [...experience].sort((a, b) => b.start - a.start)
@@ -50,12 +49,10 @@ export function Chronicle() {
     initial: (() => {
       const q = Number(new URLSearchParams(window.location.search).get('sel'))
       if (Number.isFinite(q) && q >= 1 && q <= N) return q - 1
-      const saved = Number(sessionStorage.getItem(KEY))
-      return Number.isFinite(saved) && saved >= 0 && saved < N ? saved : 0
+      return 0
     })(),
     onBack: () => go('/menu'),
   })
-  useEffect(() => sessionStorage.setItem(KEY, String(index)), [index])
   const e = entries[index]
   const dur = duration(e)
   const num = String(index + 1).padStart(2, '0')

@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Background } from "../components/Background";
 import { ScreenTitle } from "../components/ScreenTitle";
@@ -12,7 +12,6 @@ import { chapters, research, type BenchRow } from "../data/research";
 import "./Research.css";
 
 const ease = [0.16, 1, 0.3, 1] as const;
-const KEY = "aryan-portfolio:research";
 const N = chapters.length;
 
 /* ─────────────────────────────────────────────────────────
@@ -31,12 +30,10 @@ export function Research() {
     initial: (() => {
       const q = Number(new URLSearchParams(window.location.search).get("sel"));
       if (Number.isFinite(q) && q >= 1 && q <= N) return q - 1;
-      const saved = Number(sessionStorage.getItem(KEY));
-      return Number.isFinite(saved) && saved >= 0 && saved < N ? saved : 0;
+      return 0;
     })(),
     onBack: () => go("/menu"),
   });
-  useEffect(() => sessionStorage.setItem(KEY, String(index)), [index]);
   const ch = chapters[index];
 
   const rise = (k: number) => ({

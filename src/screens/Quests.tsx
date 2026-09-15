@@ -12,7 +12,6 @@ import { projects, statusLabel, type Project } from '../data/projects'
 import './Quests.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
-const KEY = 'aryan-portfolio:quest-cursor'
 
 /** segments lit on the status bar (out of 10) */
 const PROGRESS: Record<Project['status'], number> = {
@@ -41,8 +40,7 @@ export function Quests({ initialId }: { initialId?: string }) {
     initial: (() => {
       const byId = initialId ? projects.findIndex((p) => p.id === initialId) : -1
       if (byId >= 0) return byId
-      const saved = Number(sessionStorage.getItem(KEY))
-      return Number.isFinite(saved) && saved >= 0 && saved < projects.length ? saved : 0
+      return 0
     })(),
     onSelect: () => setDrawer((d) => !d),
     onBack: () => (drawer ? setDrawer(false) : go('/menu')),
@@ -56,7 +54,6 @@ export function Quests({ initialId }: { initialId?: string }) {
   }, [initialId, setIndex])
 
   useEffect(() => {
-    sessionStorage.setItem(KEY, String(index))
     const path = `#/quests/${projects[index].id}`
     if (window.location.hash !== path) window.history.replaceState(null, '', path)
   }, [index])

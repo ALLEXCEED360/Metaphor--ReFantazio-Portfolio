@@ -11,7 +11,6 @@ import { archive, collectionOf, collections, pieceUrl, type Collection } from '.
 import './Archive.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
-const KEY = 'aryan-portfolio:archive'
 const COLS = 3
 type Filter = 'all' | Collection
 
@@ -31,10 +30,8 @@ export function Archive() {
   const [index, setIndex] = useState(() => {
     const q = Number(new URLSearchParams(window.location.search).get('sel'))
     if (Number.isFinite(q) && q >= 1 && q <= archive.length) return q - 1
-    const saved = Number(sessionStorage.getItem(KEY))
-    return Number.isFinite(saved) && saved >= 0 && saved < archive.length ? saved : 0
+      return 0
   })
-  useEffect(() => sessionStorage.setItem(KEY, String(index)), [index])
   const p = archive[index]
   const col = collectionOf(p.collection)
 

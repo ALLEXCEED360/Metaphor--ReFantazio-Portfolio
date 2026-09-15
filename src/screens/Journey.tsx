@@ -12,7 +12,6 @@ import { journey, type Milestone } from '../data/education'
 import './Journey.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
-const KEY = 'aryan-portfolio:journey-cursor'
 
 /** "01" for chapters, "01.2" for entries nested under a chapter */
 const NUMBER: string[] = (() => {
@@ -47,10 +46,7 @@ export function Journey() {
   const [open, setOpen] = useState<string | null>(null)
   const { index, setIndex } = useKeyNav({
     count: journey.length,
-    initial: (() => {
-      const saved = Number(sessionStorage.getItem(KEY))
-      return Number.isFinite(saved) && saved >= 0 && saved < journey.length ? saved : 0
-    })(),
+    initial: 0,
     onSelect: (i) => setOpen((o) => (o === journey[i].id ? null : journey[i].id)),
     onBack: back,
   })
@@ -58,7 +54,6 @@ export function Journey() {
   const m = journey[index]
 
   useEffect(() => {
-    sessionStorage.setItem(KEY, String(index))
     refs.current[index]?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' })
   }, [index, reducedMotion])
 

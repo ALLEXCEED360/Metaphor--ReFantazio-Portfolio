@@ -171,7 +171,7 @@ export function MainMenu() {
   const { index, setIndex } = useKeyNav({
     count: mainMenu.length,
     initial: active,
-    onSelect: (i) => go(mainMenu[i].path, { word: mainMenu[i].word }),
+    onSelect: (i) => go(mainMenu[i].path, { word: mainMenu[i].label }),
     // Backspace / Esc → back to the title screen
     onBack: () => go('/'),
   })
@@ -265,7 +265,7 @@ export function MainMenu() {
               onFocus={() => setIndex(i)}
               onClick={() => {
                 setIndex(i)
-                go(m.path, { word: m.word })
+                go(m.path, { word: m.label })
               }}
               aria-current={isActive ? 'true' : undefined}
               aria-label={m.label}
@@ -311,22 +311,23 @@ export function MainMenu() {
             exit={{ opacity: 0, x: -10, transition: { duration: 0.12 } }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span className="mbrief__kicker t-mono">{String(mainMenu.indexOf(item) + 1).padStart(2, '0')} · {item.hint}</span>
+            <span className="mbrief__kicker t-mono">
+              {String(mainMenu.indexOf(item) + 1).padStart(2, '0')} · {item.hint}
+            </span>
             <span className="mbrief__title">{item.label}</span>
             <span className="mbrief__line t-ui">{briefs[item.id] ?? ''}</span>
           </motion.div>
         </AnimatePresence>
+        <div className="mbrief__keys">
+          <Hints
+            hints={[
+              { key: '↕', label: 'Move' },
+              { key: '↵', label: 'Confirm' },
+              { key: '⌫', label: 'Title' },
+            ]}
+          />
+        </div>
       </aside>
-
-      <footer className="menu__foot">
-        <Hints
-          hints={[
-            { key: '↕', label: 'Move' },
-            { key: '↵', label: 'Confirm' },
-            { key: '⌫', label: 'Title' },
-          ]}
-        />
-      </footer>
     </motion.div>
   )
 }

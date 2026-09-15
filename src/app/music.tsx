@@ -42,8 +42,6 @@ function ensure(): HTMLAudioElement {
   window.setInterval(() => {
     if (audio && !audio.paused) sessionStorage.setItem(POS_KEY, String(audio.currentTime))
   }, 2000)
-  // dev aid
-  ;(window as unknown as { __music?: () => unknown }).__music = () => audio && { paused: audio.paused, time: audio.currentTime, ready: audio.readyState, armed, allowed, err: audio.error?.message }
   return audio
 }
 

@@ -135,15 +135,6 @@ export function Tag({ children, tone = 'default' }: { children: ReactNode; tone?
 
 /* ── Label + value pair ("CLASS / Software Engineer") ───────────────────── */
 
-export function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="field">
-      <div className="field__label t-label">{label}</div>
-      <div className="field__value">{children}</div>
-    </div>
-  )
-}
-
 /* ── Game button — cream flag with red splat on hover ───────────────────── */
 
 export function GameButton({
@@ -181,27 +172,6 @@ export function GameButton({
   )
 }
 
-/* ── Panel — angled cream/ink card ──────────────────────────────────────── */
-
-export function Panel({
-  children,
-  tone = 'ink',
-  className = '',
-  accent,
-}: {
-  children: ReactNode
-  tone?: 'ink' | 'cream'
-  className?: string
-  accent?: 'red' | 'teal' | 'gold' | 'blue'
-}) {
-  return (
-    <div className={`panel panel--${tone} ${accent ? `panel--accent-${accent}` : ''} ${className}`}>
-      <span className="panel__corner" />
-      {children}
-    </div>
-  )
-}
-
 /* ── Pipeline / architecture flow ───────────────────────────────────────── */
 
 export function Flow({ steps, tone = 'red' }: { steps: string[]; tone?: 'red' | 'teal' }) {
@@ -216,10 +186,4 @@ export function Flow({ steps, tone = 'red' }: { steps: string[]; tone?: 'red' | 
       ))}
     </ol>
   )
-}
-
-/* ── Divider line with a small red flick ────────────────────────────────── */
-
-export function Rule({ className = '' }: { className?: string }) {
-  return <div className={`rule ${className}`} aria-hidden="true" />
 }

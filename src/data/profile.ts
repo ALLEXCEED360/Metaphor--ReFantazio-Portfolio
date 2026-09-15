@@ -5,11 +5,8 @@ export const profile = {
   titles: ['Software Engineer', 'Game Developer'],
   class: 'Software Engineer',
   subclass: 'Game Developer',
-  specialization: ['Game Development', 'Frontend', 'AI / ML'],
   origin: 'Dhaka, Bangladesh',
   location: 'Texas, USA',
-  /** the photo on the profile page */
-  photo: '/art/mobile/portrait.jpg',
   /** character art used as the mobile backdrop (public/art/mobile/chara-N.jpg) */
   portrait: 8,
   quote: 'Build interactive experiences that make people feel something.',
@@ -20,7 +17,7 @@ export const profile = {
   /* five highlights, one line each */
   highlights: [
     { name: 'Shipping', paint: '#f14352', text: 'Dragon Drop released on Steam and played by strangers.' },
-    { name: 'Research', paint: '#3a96aa', text: 'Undergraduate thesis on emotional reasoning in language models, graded A.' },
+    { name: 'Research', paint: '#3a96aa', text: 'Undergraduate thesis on emotional reasoning in language models.' },
     { name: 'Teaching', paint: '#0c8e5e', text: 'Two years as a teaching assistant in programming and discrete mathematics.' },
     { name: 'Design', paint: '#d4a900', text: 'Motion graphics and video for the BRAC University Computer Club.' },
     { name: 'Worlds', paint: '#b94abb', text: 'Island and wilderness environments built in Unreal Engine 5.' },

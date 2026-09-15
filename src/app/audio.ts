@@ -1,7 +1,7 @@
 /**
  * UI sound, synthesised with Web Audio so the site ships no audio files.
- * Everything is dry and short, in the spirit of the game's menus: a tick
- * when the cursor moves, a two-note confirm, a lower back, and a swell
+ * Everything is dry and short, in the spirit of the game's menus: a click
+ * when the cursor moves, a brushed confirm, a lower back, and a swell
  * under the big word wipe. The context is created lazily on the first
  * user gesture (browsers refuse to start audio before one).
  */

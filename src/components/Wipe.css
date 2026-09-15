@@ -37,5 +37,7 @@
   font-size: clamp(72px, 16vw, 260px);
   color: var(--cream);
   transform-origin: center;
+  -webkit-text-stroke: 0.014em var(--cream);
+  paint-order: stroke fill;
   text-shadow: 0.02em 0.02em 0 var(--red);
 }

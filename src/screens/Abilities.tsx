@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties } from 'react'
+import { useRef, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Background, charaUrl } from '../components/Background'
 import { ScreenTitle } from '../components/ScreenTitle'
@@ -12,7 +12,6 @@ import { skillCategories } from '../data/skills'
 import './Abilities.css'
 
 const ease = [0.16, 1, 0.3, 1] as const
-const KEY = 'aryan-portfolio:ability'
 const N = skillCategories.length
 const STEP = 360 / N
 const total = skillCategories.reduce((n, c) => n + c.skills.length, 0)
@@ -31,12 +30,10 @@ export function Abilities() {
     count: N,
     axis: 'both',
     initial: (() => {
-      const saved = Number(sessionStorage.getItem(KEY))
-      return Number.isFinite(saved) && saved >= 0 && saved < N ? saved : 0
+      return 0
     })(),
     onBack: () => go('/menu'),
   })
-  useEffect(() => sessionStorage.setItem(KEY, String(index)), [index])
   const c = skillCategories[index]
 
   return (

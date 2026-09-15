@@ -1,49 +1,7 @@
-/* ── Shared screen layouts ─────────────────────────────────────────────── */
-
-.cols {
-  display: grid;
-  grid-template-columns: minmax(300px, 480px) 1fr;
-  gap: clamp(24px, 4vw, 64px);
-  align-items: start;
-}
-.cols--wide {
-  grid-template-columns: minmax(320px, 560px) 1fr;
-}
-.cols--even {
-  grid-template-columns: 1fr 1fr;
-}
-
-@media (max-width: 960px) {
-  .cols,
-  .cols--wide,
-  .cols--even {
-    grid-template-columns: 1fr;
-  }
-}
-
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
+/* ── Shared bits used across screens ───────────────────────────────────── */
 
 .tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-}
-
-.big-name {
-  font-size: clamp(40px, 6vw, 96px);
-  line-height: 0.85;
-}
-.big-name--red {
-  color: var(--red-hot);
-}
-
-.kicker {
-  font-size: 0.8rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
 }

@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────
-   SETTINGS — option slabs (left) · preview & controls legend (right)
+   SETTINGS — option slabs (left) · controls legend (right)
    ───────────────────────────────────────────────────────── */
 
 .settings .screen__body {
@@ -21,7 +21,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 1.1vh;
+  gap: 1.6vh;
   min-height: 0;
 }
 .opt {
@@ -32,8 +32,8 @@
   grid-template-rows: auto auto;
   align-items: center;
   column-gap: 1.4vw;
-  row-gap: 0.4vh;
-  padding: 1.6vh 1.8vw 1.4vh 1.4vw;
+  row-gap: 0.5vh;
+  padding: 2.2vh 1.8vw 2vh 1.4vw;
   background: rgba(12, 10, 10, 0.66);
   box-shadow: inset 0 0 0 1px var(--line-faint);
   clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
@@ -164,60 +164,6 @@
   gap: 2vh;
   min-height: 0;
 }
-.preview {
-  display: flex;
-  flex-direction: column;
-  gap: 1vh;
-}
-.preview__stage {
-  position: relative;
-  height: clamp(110px, 18vh, 190px);
-  overflow: hidden;
-  background: rgba(12, 10, 10, 0.72);
-  box-shadow: inset 0 0 0 1px var(--line-faint);
-  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-}
-.preview__splat {
-  position: absolute;
-  inset: 24% 46% 24% 5%;
-  transform-origin: left center;
-}
-.preview__word {
-  position: absolute;
-  left: 9%;
-  top: 50%;
-  translate: 0 -50%;
-  font-size: clamp(40px, 9vh, 88px);
-  line-height: 1;
-  color: var(--ink);
-  text-shadow: 0.04em 0.04em 0 var(--cream);
-}
-.preview__cursor {
-  position: absolute;
-  right: 16%;
-  bottom: 22%;
-  width: 0;
-  height: 0;
-  border-left: 7px solid var(--cream);
-  border-top: 5px solid transparent;
-  border-bottom: 9px solid transparent;
-  transform: rotate(-30deg);
-  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
-}
-.preview__cursor--brush {
-  width: 48px;
-  height: 48px;
-  border: 0;
-  transform: none;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
-}
-.preview__caption {
-  font-size: 0.66rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
-}
-
 .legend {
   display: flex;
   flex-direction: column;
