@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNav, WIPE_COVER_MS, WIPE_REVEAL_MS } from '../app/router'
 import './Wipe.css'
@@ -39,6 +40,7 @@ export function Wipe() {
           {slab('ink', 0.1, 0)}
           <motion.div
             className="wipe__word t-hero"
+            style={{ '--fit': `${(86 / (wipe.word.length * 0.82)).toFixed(1)}vw` } as CSSProperties}
             initial={{ opacity: 0, x: -90, scaleX: 1.9 }}
             animate={cover ? { opacity: 1, x: 0, scaleX: 1.32 } : { opacity: 0, x: 160, scaleX: 1.5 }}
             transition={{

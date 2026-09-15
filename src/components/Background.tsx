@@ -13,8 +13,6 @@ export interface BackgroundProps {
   focus?: 'left' | 'right' | 'center' | 'none'
   /** overall darkness of the art 0–1 */
   dim?: number
-  /** colour wash */
-  tint?: 'none' | 'red' | 'teal'
   /** object-position for the art */
   position?: string
   /** optional muted video loop layered over the art (public/video/*.mp4) */
@@ -24,7 +22,7 @@ export interface BackgroundProps {
   videoDelay?: number
 }
 
-export function artUrl(n: number) {
+function artUrl(n: number) {
   return `/art/desktop/wallpaper-${n}.jpg`
 }
 export function charaUrl(n: number) {
@@ -36,7 +34,6 @@ export function Background({
   mobileArt,
   focus = 'left',
   dim = 0.55,
-  tint = 'none',
   position = 'center',
   video,
   poster,
@@ -71,7 +68,7 @@ export function Background({
   const src = isMobile && mobileArt ? charaUrl(mobileArt) : art ? artUrl(art) : null
 
   return (
-    <div className={`bg bg--${focus} bg--tint-${tint}`} aria-hidden="true">
+    <div className={`bg bg--${focus}`} aria-hidden="true">
       <AnimatePresence initial={false}>
         {src && (
           <motion.div
@@ -100,7 +97,6 @@ export function Background({
       )}
       <div className="bg__dim" style={{ opacity: dim }} />
       <div className="bg__focus" />
-      <div className="bg__tint" />
       <svg className="bg__lines" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
         <circle cx="1420" cy="520" r="520" />
         <circle cx="1420" cy="520" r="700" />

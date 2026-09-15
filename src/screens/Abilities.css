@@ -294,7 +294,7 @@
     mask-image: none;
   }
   .ab__title {
-    font-size: clamp(36px, 10vw, 56px);
+    font-size: clamp(30px, 8vw, 48px);
   }
   .tiles {
     grid-template-columns: 1fr;

@@ -6,6 +6,7 @@ import { Splat } from '../components/Splat'
 import { GameButton, Screen, Tag } from '../components/ui'
 import { useNav } from '../app/router'
 import { useSettings } from '../app/settings'
+import { useIsMobile } from '../hooks/useMedia'
 import { sfx } from '../app/audio'
 import { archive, collectionOf, collections, pieceUrl, type Collection } from '../data/archive'
 import './Archive.css'
@@ -24,6 +25,7 @@ type Filter = 'all' | Collection
 export function Archive() {
   const { go } = useNav()
   const { reducedMotion } = useSettings()
+  const isMobile = useIsMobile()
   const [filter, setFilter] = useState<Filter>('all')
   const shown = useMemo(() => (filter === 'all' ? archive : archive.filter((p) => p.collection === filter)), [filter])
 
@@ -173,7 +175,16 @@ export function Archive() {
                             if (!on) sfx.tick()
                             setIndex(i)
                           }}
-                          onClick={() => (on ? (sfx.confirm(), window.open(x.link, '_blank', 'noreferrer')) : setIndex(i))}
+                          onClick={() => {
+                            if (on) {
+                              sfx.confirm()
+                              window.open(x.link, '_blank', 'noreferrer')
+                              return
+                            }
+                            setIndex(i)
+                            // on a phone the viewer sits above the grid: bring it back into view
+                            if (isMobile) document.querySelector('.stage__body')?.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })
+                          }}
                           aria-selected={on}
                           aria-label={`${x.title}, ${c.title}, ${x.year}`}
                         >

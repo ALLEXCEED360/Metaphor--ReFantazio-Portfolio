@@ -6,6 +6,7 @@ import { Splat } from '../components/Splat'
 import { Screen } from '../components/ui'
 import { useKeyNav } from '../hooks/useKeyNav'
 import { useNav } from '../app/router'
+import { useIsMobile } from '../hooks/useMedia'
 import { useSettings } from '../app/settings'
 import { profile } from '../data/profile'
 import './Contact.css'
@@ -29,13 +30,12 @@ const channels = [
 export function Contact() {
   const { go } = useNav()
   const { reducedMotion } = useSettings()
+  const isMobile = useIsMobile()
   const { index, setIndex } = useKeyNav({
     count: channels.length,
     axis: 'both',
-    initial: (() => {
-      return 0
-    })(),
-    onSelect: (i) => window.open(channels[i].href, channels[i].href.startsWith('mailto') ? '_self' : '_blank', 'noreferrer'),
+    initial: isMobile ? -1 : 0,
+    onSelect: (i) => i >= 0 && window.open(channels[i].href, channels[i].href.startsWith('mailto') ? '_self' : '_blank', 'noreferrer'),
     onBack: () => go('/menu'),
   })
 

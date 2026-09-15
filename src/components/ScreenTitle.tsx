@@ -9,15 +9,13 @@ import './ScreenTitle.css'
 export function ScreenTitle({
   children,
   sub,
-  size = 'lg',
 }: {
   children: string
   sub?: string
-  size?: 'lg' | 'md'
 }) {
   const { reducedMotion } = useSettings()
   return (
-    <div className={`title title--${size}`}>
+    <div className="title">
       <motion.h1
         className="t-hero title__word"
         initial={reducedMotion ? false : { x: -60, opacity: 0 }}

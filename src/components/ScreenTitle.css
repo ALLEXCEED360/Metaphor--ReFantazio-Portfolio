@@ -20,9 +20,6 @@
   text-shadow: 0 0 0 transparent;
 }
 
-.title--md .title__word {
-  font-size: clamp(48px, 7.5vw, 112px);
-}
 
 .title__sub {
   margin-top: 0.4em;
@@ -41,8 +38,5 @@
     transform: scaleX(1.12);
     white-space: normal;
     line-height: 0.86;
-  }
-  .title--md .title__word {
-    font-size: clamp(36px, 11vw, 60px);
   }
 }

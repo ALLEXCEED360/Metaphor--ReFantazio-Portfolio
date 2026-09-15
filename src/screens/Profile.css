@@ -69,16 +69,6 @@
   width: 112%;
   height: 138%;
 }
-.pf__titles {
-  font-family: var(--font-ui);
-  font-stretch: 68%;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: clamp(0.95rem, 2.1vh, 1.6rem);
-  color: var(--fg-dim);
-  text-shadow: 0.05em 0.05em 0 var(--ink);
-}
 .pf__creed {
   display: flex;
   flex-direction: column;
@@ -347,13 +337,49 @@
     grid-template-rows: auto auto auto;
   }
   .pf__name {
-    font-size: clamp(44px, 15vw, 80px);
+    font-size: clamp(40px, 13vw, 64px);
     white-space: normal;
+  }
+  .pf__name-line--red {
+    padding-right: 0.3em;
+  }
+  /* role · from · based in as three tidy columns */
+  .pf__facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .pf__fact dd {
+    font-size: 0.85rem;
+    line-height: 1.15;
+  }
+  .pf__creed p {
+    font-size: 1.05rem;
+  }
+  .pf__bio {
+    font-size: 0.98rem;
+  }
+  .pf__links {
+    gap: 6px;
   }
   .pf__virtues {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
   .pf__ledger {
     justify-content: flex-start;
+    padding: 1.2vh 3vw 1.4vh;
+  }
+  .led {
+    padding: 8px 4px 8px 6px;
+  }
+  .led__value {
+    font-size: 1.8rem;
+  }
+  .led__label {
+    font-size: 1rem;
+  }
+  .led__arrow {
+    display: none;
   }
 }

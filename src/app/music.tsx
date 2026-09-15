@@ -10,7 +10,7 @@ import { useSettings } from './settings'
  * picks the music up where it was instead of starting over.
  */
 
-export const TRACK = {
+const TRACK = {
   src: '/music/ode-to-heroes.mp3',
   title: 'Ode to Heroes',
   by: 'Metaphor: ReFantazio · Shoji Meguro',
@@ -72,7 +72,7 @@ function disarm() {
 export function startMusic() {
   tryPlay()
 }
-export function setMusicAllowed(on: boolean) {
+function setMusicAllowed(on: boolean) {
   allowed = on
   if (!on) {
     audio?.pause()

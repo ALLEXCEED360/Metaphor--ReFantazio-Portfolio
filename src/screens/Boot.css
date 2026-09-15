@@ -132,6 +132,14 @@
 }
 
 @media (max-width: 760px) {
+  .boot__first,
+  .boot__last {
+    /* the letters are stretched 1.32× by the entrance, so size for the width */
+    font-size: clamp(34px, 11.5vw, 56px);
+  }
+  .boot__last {
+    margin-left: 0.12em;
+  }
   .boot__titles {
     flex-direction: column;
     gap: 8px;

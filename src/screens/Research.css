@@ -719,14 +719,46 @@
   .rs {
     height: auto;
   }
+  /* five equal numeral tabs; the active one is filled in its chapter colour */
   .rs__tabs {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    padding-bottom: 1.2vh;
+  }
+  .tab {
+    justify-content: center;
+    padding: 8px 4px;
+    box-shadow: inset 0 0 0 1px var(--line-faint);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  .tab.is-active {
+    background: var(--col);
+  }
+  .tab__mark {
+    display: none;
+  }
+  .tab__numeral {
+    font-size: 1.4rem;
   }
   .tab__title {
     display: none;
   }
-  .tab.is-active .tab__title {
-    display: inline;
+  .tab.is-active .tab__numeral {
+    text-shadow: none;
+  }
+  .th__stats .bigstat {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 1.2vh 1rem;
+  }
+  .bigstat__val {
+    font-size: 2rem;
+  }
+  .colo {
+    margin-top: 2vh;
   }
   .th__title {
     font-size: clamp(40px, 14vw, 72px);

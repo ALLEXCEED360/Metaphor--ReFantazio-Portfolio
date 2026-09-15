@@ -223,23 +223,71 @@
       same way so the words still sit on the paint ─────────────────────── */
 
 @media (max-width: 760px) {
-  .menu__num {
-    font-size: 15vh;
-    right: 3vw;
-    top: -0.06em;
-  }
-  .menu__vname {
-    top: 18vh;
-    right: 3.5vw;
-    font-size: 0.75rem;
-  }
-  .menu__brief {
-    display: none;
-  }
   .menu--mobile .menu__bg {
-    background-position: 68% center;
+    background-position: 62% center;
   }
-  .menu--mobile .wheel__splat {
-    width: 140vw;
+  .menu__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(10, 9, 9, 0.88) 0%, rgba(10, 9, 9, 0.7) 55%, rgba(10, 9, 9, 0.35) 100%);
+  }
+  .mnav {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(6px, 1.4vh, 14px);
+    padding: calc(var(--safe-top) + 6vh) var(--gutter) 10vh;
+  }
+  .mnav__item {
+    display: grid;
+    grid-template-columns: 2.6ch minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 10px;
+    padding: 6px 10px 6px 0;
+    text-align: left;
+    color: var(--cream);
+    border-left: 3px solid transparent;
+  }
+  .mnav__item:active {
+    border-left-color: var(--col);
+    background: linear-gradient(90deg, rgba(242, 234, 217, 0.08), transparent);
+  }
+  .mnav__num {
+    font-size: 1rem;
+    color: var(--col);
+    padding-left: 8px;
+  }
+  .mnav__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .mnav__word {
+    font-size: clamp(28px, 8.4vw, 42px);
+    line-height: 1;
+    transform: none;
+    white-space: nowrap;
+    text-shadow: 0.04em 0.04em 0 var(--ink);
+  }
+  .mnav__hint {
+    font-family: var(--font-ui);
+    font-stretch: 70%;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.68rem;
+    color: var(--fg-dim);
+  }
+  .mnav__name {
+    position: absolute;
+    left: var(--gutter);
+    bottom: calc(var(--safe-bottom) + 14px);
+    font-size: 0.7rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
   }
 }

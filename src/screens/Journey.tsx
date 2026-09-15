@@ -46,12 +46,13 @@ export function Journey() {
   const [open, setOpen] = useState<string | null>(null)
   const { index, setIndex } = useKeyNav({
     count: journey.length,
-    initial: 0,
-    onSelect: (i) => setOpen((o) => (o === journey[i].id ? null : journey[i].id)),
+    // touch screens have no cursor, so nothing starts highlighted
+    initial: isMobile ? -1 : 0,
+    onSelect: (i) => i >= 0 && setOpen((o) => (o === journey[i].id ? null : journey[i].id)),
     onBack: back,
   })
   const refs = useRef<(HTMLLIElement | null)[]>([])
-  const m = journey[index]
+  const m = journey[Math.max(index, 0)]
 
   useEffect(() => {
     refs.current[index]?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' })

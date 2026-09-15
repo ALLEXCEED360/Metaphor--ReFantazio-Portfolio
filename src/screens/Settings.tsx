@@ -6,7 +6,7 @@ import { Splat } from '../components/Splat'
 import { KeyGlyph, Screen } from '../components/ui'
 import { useNav } from '../app/router'
 import { useSettings, type Settings as S } from '../app/settings'
-import { useFinePointer } from '../hooks/useMedia'
+import { useFinePointer, useIsMobile } from '../hooks/useMedia'
 import { sfx } from '../app/audio'
 import './Settings.css'
 
@@ -43,6 +43,7 @@ export function Settings() {
   const { go } = useNav()
   const { settings, set, reset, reducedMotion } = useSettings()
   const fine = useFinePointer()
+  const isMobile = useIsMobile()
 
   const rows: Row[] = [
     {
@@ -80,7 +81,7 @@ export function Settings() {
   const ACTIONS = rows.length // index of the restore row
   const count = rows.length + 1
 
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(isMobile ? -1 : 0)
   const change = useCallback(
     (dir: 1 | -1) => {
       const r = rows[index]

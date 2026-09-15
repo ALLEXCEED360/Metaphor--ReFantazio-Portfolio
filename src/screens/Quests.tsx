@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Background } from '../components/Background'
@@ -32,6 +32,7 @@ export function Quests({ initialId }: { initialId?: string }) {
   const { go } = useNav()
   const { reducedMotion } = useSettings()
   const isMobile = useIsMobile()
+  const touchX = useRef<number | null>(null)
   const [drawer, setDrawer] = useState(false)
   const { index, setIndex } = useKeyNav({
     count: projects.length,
@@ -72,7 +73,20 @@ export function Quests({ initialId }: { initialId?: string }) {
 
       <div className="qb" style={{ '--paint': p.paint } as CSSProperties}>
         {/* ── the hand of cards ─────────────────────────────────────────── */}
-        <div className={`qb__hand ${isMobile ? 'qb__hand--mobile' : ''}`} role="listbox" aria-label="Quests">
+        <div
+          className={`qb__hand ${isMobile ? 'qb__hand--mobile' : ''}`}
+          role="listbox"
+          aria-label="Quests"
+          onTouchStart={(e) => {
+            touchX.current = e.touches[0].clientX
+          }}
+          onTouchEnd={(e) => {
+            if (touchX.current === null) return
+            const dx = e.changedTouches[0].clientX - touchX.current
+            touchX.current = null
+            if (Math.abs(dx) > 48) setIndex(Math.max(0, Math.min(projects.length - 1, index + (dx < 0 ? 1 : -1))))
+          }}
+        >
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={p.id}
@@ -98,7 +112,7 @@ export function Quests({ initialId }: { initialId?: string }) {
             const active = d === 0
             const hidden = abs > 3
             const layout = isMobile
-              ? { x: d * 78, rotate: 0, scale: active ? 1 : 0.86, y: active ? 0 : 14 }
+              ? { x: d * (typeof window !== 'undefined' ? window.innerWidth : 400), rotate: 0, scale: active ? 1 : 0.92, y: 0 }
               : {
                   x: d * 16.5 + Math.sign(d) * 7,
                   rotate: d * 4,
@@ -157,6 +171,16 @@ export function Quests({ initialId }: { initialId?: string }) {
             )
           })}
         </div>
+
+        {isMobile && (
+          <div className="qb__pager" role="tablist" aria-label="Quests">
+            {projects.map((x, i) => (
+              <button key={x.id} className={`qb__page ${i === index ? 'is-on' : ''}`} style={{ '--col': x.paint } as CSSProperties} onClick={() => setIndex(i)} role="tab" aria-selected={i === index} aria-label={x.title}>
+                <span className="t-num">{String(i + 1).padStart(2, '0')}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* ── quest brief for the active card ─────────────────────────── */}
         <AnimatePresence mode="wait" initial={false}>

@@ -325,47 +325,93 @@
   .ch {
     grid-template-columns: 1fr;
     height: auto;
-    gap: 3vh;
+    gap: 2.4vh;
   }
+  /* the index becomes a strip of five equal tabs */
   .ch__index {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 6px;
     border-right: 0;
+    padding: 0 0 1.6vh;
     border-bottom: 1px solid var(--line-faint);
-    padding: 0 0 2vh;
   }
   .idx {
-    padding: 4px 10px 4px 6px;
-    gap: 0 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 8px 8px 10px;
+    min-width: 0;
+    box-shadow: inset 0 0 0 1px var(--line-faint);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    transform: none;
   }
-  .idx__num {
-    font-size: 1.8rem;
+  .idx.is-active {
+    transform: none;
+    background: var(--col);
   }
-  .idx__text {
+  .idx__mark {
     display: none;
   }
-  .idx.is-active .idx__text {
+  .idx__num {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  .idx__text {
     display: flex;
+  }
+  .idx__org {
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .idx__period {
     display: none;
   }
   .dos {
     justify-content: flex-start;
+    gap: 1.6vh;
+    max-width: none;
   }
+  /* the role: cream on a paint bar instead of the brush stroke, so long titles stay readable */
   .dos__role {
-    font-size: clamp(30px, 9vw, 48px);
+    font-size: clamp(26px, 7.4vw, 40px);
+    padding: 0 0 6px;
+    margin-left: 0;
+    border-bottom: 4px solid var(--paint);
+  }
+  .dos__role-text {
+    transform: none;
+    color: var(--cream);
+    text-shadow: 0.04em 0.04em 0 var(--ink);
+    white-space: normal;
+  }
+  .dos__role-splat {
+    display: none;
+  }
+  .dos__org {
+    font-size: 1.2rem;
   }
   .dos__stats {
-    grid-template-columns: 1fr;
-    gap: 1.2vh 0;
+    grid-template-columns: repeat(3, auto);
+    gap: 0 14px;
     width: 100%;
+    justify-content: space-between;
   }
   .dstat {
-    border-right: 0;
     padding-right: 0;
+    border-right: 0;
+  }
+  .dstat__val {
+    font-size: 1.35rem;
+  }
+  .dos__summary {
+    font-size: 1rem;
   }
   .dos__duties ol {
     grid-template-columns: 1fr;

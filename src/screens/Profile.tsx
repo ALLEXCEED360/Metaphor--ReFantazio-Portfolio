@@ -6,6 +6,7 @@ import { Splat } from '../components/Splat'
 import { Screen } from '../components/ui'
 import { useKeyNav } from '../hooks/useKeyNav'
 import { useNav } from '../app/router'
+import { useIsMobile } from '../hooks/useMedia'
 import { useSettings } from '../app/settings'
 import { profile } from '../data/profile'
 import { journey } from '../data/education'
@@ -44,13 +45,12 @@ const links = [
 export function Profile() {
   const { go } = useNav()
   const { reducedMotion } = useSettings()
+  const isMobile = useIsMobile()
   const { index, setIndex } = useKeyNav({
     count: ledger.length,
     axis: 'both',
-    initial: (() => {
-      return 0
-    })(),
-    onSelect: (i) => go(ledger[i].path, { word: ledger[i].word }),
+    initial: isMobile ? -1 : 0,
+    onSelect: (i) => i >= 0 && go(ledger[i].path, { word: ledger[i].word }),
     onBack: () => go('/menu'),
   })
 

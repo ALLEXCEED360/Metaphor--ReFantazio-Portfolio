@@ -387,13 +387,47 @@
     -webkit-mask-image: none;
     mask-image: none;
   }
+  /* filters as four equal tiles */
   .arc__filters {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .filt {
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    box-shadow: inset 0 0 0 1px var(--line-faint);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  .filt::after {
+    display: none;
+  }
+  .filt.is-active {
+    background: rgba(242, 234, 217, 0.08);
+    box-shadow: inset 0 0 0 1px var(--col);
+  }
+  .filt__count {
+    font-size: 1.2rem;
+  }
+  .filt__name {
+    font-size: 0.72rem;
+  }
+  .grp__title {
+    font-size: 1.4rem;
   }
   .grp__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .view__screen {
+    aspect-ratio: 16 / 9;
+  }
   .view__title {
-    font-size: clamp(28px, 8vw, 44px);
+    font-size: clamp(26px, 7.4vw, 40px);
+  }
+  .view__note {
+    font-size: 0.98rem;
   }
 }

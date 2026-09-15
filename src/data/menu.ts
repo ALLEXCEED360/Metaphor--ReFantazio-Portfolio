@@ -14,5 +14,5 @@ export const mainMenu: MenuEntry[] = [
   { id: 'archive', label: 'Creative', path: '/archive', hint: 'Motion, cinematics & art' },
   { id: 'profile', label: 'About', path: '/profile', hint: 'Character profile' },
   { id: 'contact', label: 'Contact', path: '/contact', hint: 'The next journey' },
-  { id: 'settings', label: 'Settings', path: '/settings', hint: 'Motion, cursor, sound' },
+  { id: 'settings', label: 'Settings', path: '/settings', hint: 'Cursor, music, sound' },
 ]

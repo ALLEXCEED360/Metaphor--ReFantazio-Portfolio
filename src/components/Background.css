@@ -62,20 +62,6 @@
   background: radial-gradient(ellipse at center, rgba(10, 9, 9, 0.55), rgba(10, 9, 9, 0.85) 80%);
 }
 
-.bg__tint {
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: multiply;
-  opacity: 0;
-}
-.bg--tint-red .bg__tint {
-  background: linear-gradient(180deg, rgba(201, 31, 46, 0.55), rgba(138, 18, 32, 0.35));
-  opacity: 0.45;
-}
-.bg--tint-teal .bg__tint {
-  background: linear-gradient(180deg, rgba(30, 143, 149, 0.55), rgba(16, 88, 92, 0.35));
-  opacity: 0.45;
-}
 
 /* thin geometric hairlines & circles — Metaphor's compass-like overlays */
 .bg__lines {

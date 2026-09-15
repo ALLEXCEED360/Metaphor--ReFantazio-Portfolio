@@ -39,7 +39,7 @@ export interface Route {
   id?: string
 }
 
-export function matchRoute(path: string): Route {
+function matchRoute(path: string): Route {
   const parts = path.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean)
   if (parts.length === 0) return { path: '/', screen: 'boot' }
   const [head, id] = parts
@@ -63,7 +63,7 @@ export function matchRoute(path: string): Route {
 }
 
 /** Parent of a route — used by back() */
-export function parentOf(route: Route): string {
+function parentOf(route: Route): string {
   if (route.screen === 'quest') return '/quests'
   if (route.screen === 'boot' || route.screen === 'menu') return '/menu'
   return '/menu'
@@ -88,7 +88,7 @@ interface NavCtx {
 const NavContext = createContext<NavCtx | null>(null)
 
 export const WIPE_COVER_MS = 480
-export const WIPE_HOLD_MS = 420
+const WIPE_HOLD_MS = 420
 export const WIPE_REVEAL_MS = 560
 
 function readHash(): string {

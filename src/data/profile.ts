@@ -2,7 +2,6 @@ export const profile = {
   name: 'Fardeen Alam',
   first: 'Fardeen',
   last: 'Alam',
-  titles: ['Software Engineer', 'Game Developer'],
   /** the three words under the name on the launch screen */
   banner: ['Software', 'Game Development', 'Creativity'],
   class: 'Software Engineer',

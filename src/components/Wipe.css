@@ -34,7 +34,9 @@
 .wipe__word {
   position: relative;
   z-index: 4;
-  font-size: clamp(72px, 16vw, 260px);
+  /* never wider than the screen: --fit is set per word from its length */
+  font-size: clamp(40px, min(16vw, var(--fit, 16vw)), 260px);
+  white-space: nowrap;
   color: var(--cream);
   transform-origin: center;
   -webkit-text-stroke: 0.014em var(--cream);

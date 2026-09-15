@@ -196,6 +196,40 @@ export function MainMenu() {
     ? { width: '100%', height: '100%' }
     : { width: DESIGN.w, height: DESIGN.h, transform: `translate(${cover.ox}px, ${cover.oy}px) scale(${cover.s})` }
 
+  // phones: a clean upright list, nothing pre-selected, a tap goes straight through
+  if (isMobile) {
+    return (
+      <motion.div className="menu menu--mobile" initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
+        <div className="menu__bg" aria-hidden="true" />
+        <div className="menu__grain" aria-hidden="true" />
+        <div className="menu__shade" aria-hidden="true" />
+        <nav className="mnav" aria-label="Main menu">
+          {mainMenu.map((m, i) => (
+            <motion.button
+              key={m.id}
+              className="mnav__item"
+              style={{ '--col': PAINT[i] } as CSSProperties}
+              initial={reducedMotion ? false : { opacity: 0, x: -24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.05 * i, ease }}
+              onClick={() => go(m.path, { word: m.label })}
+              aria-label={m.label}
+            >
+              <span className="mnav__num t-num">{String(i + 1).padStart(2, '0')}</span>
+              <span className="mnav__text">
+                <span className="mnav__word t-hero">{m.label}</span>
+                <span className="mnav__hint">{m.hint}</span>
+              </span>
+            </motion.button>
+          ))}
+        </nav>
+        <span className="mnav__name t-ui-bold" aria-hidden="true">
+          {profile.name}
+        </span>
+      </motion.div>
+    )
+  }
+
   return (
     <motion.div
       className={`menu ${isMobile ? 'menu--mobile' : ''}`}
