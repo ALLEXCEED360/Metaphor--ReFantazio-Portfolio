@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent, type TouchEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Hints, BackButton } from '../components/ui'
 import { useNav } from '../app/router'
 import { useSettings } from '../app/settings'
 import { useKeyNav } from '../hooks/useKeyNav'
-import { useIsMobile } from '../hooks/useMedia'
+import { useMedia } from '../hooks/useMedia'
 import { mainMenu } from '../data/menu'
 import { profile } from '../data/profile'
 import { journey } from '../data/education'
@@ -84,21 +84,27 @@ interface Placed {
   size: number
 }
 
-/* the arc: the neutral anchors, extended half a step past each end so the
-   first and last words rest where the game puts them */
-const ARC = (() => {
-  const n = NEUTRAL.length
+/* a phone on its side: the same words on an evenly spaced, gently tilted
+   line — the game's tight bottom fan is too cramped for a thumb */
+const SIDE: Neutral[] = NEUTRAL.map((n, i) => ({ x: 700 + i * 24, y: 150 + i * 138, r: 7 - i * 1.6, s: n.s, cap: n.cap }))
+
+/* the arc through the anchors, extended half a step past the top and barely
+   past the bottom so the first and last words rest where the game puts them */
+function buildArc(neutral: Neutral[]) {
+  const n = neutral.length
   const ext = (a: Neutral, b: Neutral, k: number) => ({ x: a.x + (a.x - b.x) * k, y: a.y + (a.y - b.y) * k, r: a.r + (a.r - b.r) * k })
-  // the bottom end barely extends: the last word must stay clear of the frame edge
-  const pts = [ext(NEUTRAL[0], NEUTRAL[1], 0.5), ...NEUTRAL.map(({ x, y, r }) => ({ x, y, r })), ext(NEUTRAL[n - 1], NEUTRAL[n - 2], 0.12)]
+  const pts = [ext(neutral[0], neutral[1], 0.5), ...neutral.map(({ x, y, r }) => ({ x, y, r })), ext(neutral[n - 1], neutral[n - 2], 0.12)]
   const len = [0]
   for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y))
   return { pts, len, total: len[len.length - 1] }
-})()
+}
+type Arc = ReturnType<typeof buildArc>
+const ARC = buildArc(NEUTRAL)
+const ARC_SIDE = buildArc(SIDE)
 
 /** point on the arc at distance d from its top */
-function alongArc(d: number) {
-  const { pts, len } = ARC
+function alongArc(arc: Arc, d: number) {
+  const { pts, len } = arc
   let i = 1
   while (i < len.length - 1 && len[i] < d) i++
   const t = (d - len[i - 1]) / Math.max(1, len[i] - len[i - 1])
@@ -107,16 +113,17 @@ function alongArc(d: number) {
   return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, r: a.r + (b.r - a.r) * t }
 }
 
-function layout(active: number): Placed[] {
+function layout(active: number, side = false): Placed[] {
+  const arc = side ? ARC_SIDE : ARC
   const sizes = NEUTRAL.map((n, i) => (i === active ? n.s * SELECT_SCALE : n.s))
   const shares = sizes.map((s, i) => (i === active ? s * (1 + SELECT_ROOM) : s))
   const sum = shares.reduce((a, b) => a + b, 0)
   let acc = 0
   return NEUTRAL.map((_, i) => {
     // the word sits at the centre of its own height; the extra room trails after it
-    const centre = ((acc + sizes[i] / 2) / sum) * ARC.total
+    const centre = ((acc + sizes[i] / 2) / sum) * arc.total
     acc += shares[i]
-    const p = alongArc(centre)
+    const p = alongArc(arc, centre)
     return { x: p.x, y: p.y, angle: p.r, size: sizes[i] }
   })
 }
@@ -153,45 +160,43 @@ function wordAt(x: number, y: number, placed: Placed[], active: number): number 
   return inBand(active, 1.6) != null ? active : null
 }
 
-/** phones: a plain tilted stack, right-aligned, in viewport px */
-function layoutMobile(active: number, W: number, H: number): Placed[] {
-  const size = Math.min(W * 0.11, H * 0.05)
-  const pitch = size * 1.55
-  const top = H * 0.16
-  return NEUTRAL.map((_, i) => ({
-    x: W * 0.9,
-    y: top + i * pitch + (i > active ? size * 0.5 : 0) + (i === active ? size * 0.2 : 0),
-    angle: -6,
-    size: i === active ? size * 1.4 : size,
-  }))
-}
-
 /**
  * Scale the design space to the viewport HEIGHT so the word column is never
  * cropped (the plate behind it still covers). On narrow windows also make
  * sure the column (≈1250 design px wide) fits the width.
+ *
+ * A phone on its side is the exception: there the words are scaled up for
+ * the thumb (the column is taller than the screen) and the wheel pans so
+ * the chosen word stays in view — swiping over it scrolls the selection.
  */
-function useCoverTransform() {
-  const [t, setT] = useState({ s: 1, ox: 0, oy: 0 })
+function useCoverTransform(roomy: boolean) {
+  const [t, setT] = useState({ s: 1, ox: 0, oy: 0, H: 0 })
   useLayoutEffect(() => {
     const calc = () => {
       const W = window.innerWidth
       const H = window.innerHeight
-      const s = Math.min(H / DESIGN.h, W / 1250)
-      setT({ s, ox: 0, oy: (H - DESIGN.h * s) / 2 })
+      const s = roomy ? Math.min(W / 1250, H / 640) : Math.min(H / DESIGN.h, W / 1250)
+      // sideways the column shifts left a little to clear the brief panel
+      setT({ s, ox: roomy ? -W * 0.06 : 0, oy: (H - DESIGN.h * s) / 2, H })
     }
     calc()
     window.addEventListener('resize', calc)
     return () => window.removeEventListener('resize', calc)
-  }, [])
+  }, [roomy])
   return t
 }
 
 export function MainMenu() {
   const { go } = useNav()
   const { reducedMotion } = useSettings()
-  const isMobile = useIsMobile()
-  const cover = useCoverTransform()
+  // only a portrait phone gets the plain list; a phone on its side shows the wheel like the desktop
+  const isMobile = useMedia('(max-width: 760px)')
+  // a touch screen has no Backspace: the brief's foot carries a Title button instead of key hints
+  const isTouch = useMedia('(pointer: coarse)')
+  // a phone on its side: bigger words, the wheel pans to the chosen one, a swipe moves it
+  const shortLandscape = useMedia('(max-height: 500px) and (orientation: landscape)')
+  const sideways = isTouch && shortLandscape
+  const cover = useCoverTransform(sideways)
 
   const [active, setActive] = useState(() => {
     const q = Number(new URLSearchParams(window.location.search).get('sel'))
@@ -220,7 +225,7 @@ export function MainMenu() {
 
   const item = mainMenu[active]
   const paint = PAINT[active]
-  const placed = isMobile ? layoutMobile(active, window.innerWidth, window.innerHeight) : layout(active)
+  const placed = layout(active, sideways)
   const sel = placed[active]
 
   // mouse: hit-test in design space over the whole wheel (see wordAt)
@@ -242,11 +247,27 @@ export function MainMenu() {
     const i = under(e)
     if (i == null) return
     setIndex(i)
+    // on a touch screen the first tap only moves the cursor there; a second tap confirms
+    if (isTouch && i !== index) return
     go(mainMenu[i].path, { word: mainMenu[i].label })
   }
-  const wheelStyle = isMobile
-    ? { width: '100%', height: '100%' }
-    : { width: DESIGN.w, height: DESIGN.h, transform: `translate(${cover.ox}px, ${cover.oy}px) scale(${cover.s})` }
+  // sideways the wheel pans so the chosen word sits mid-screen; elsewhere the whole column is centred
+  const panY = sideways ? cover.H / 2 - sel.y * cover.s : cover.oy
+  // the sideways line runs past the design height; the box must still contain every word for taps
+  const wheelStyle = { width: DESIGN.w, height: sideways ? 1400 : DESIGN.h }
+
+  // sideways: a vertical swipe over the wheel moves the cursor one step
+  const swipeY = useRef<number | null>(null)
+  const onWheelTouchStart = (e: TouchEvent) => {
+    swipeY.current = e.touches[0].clientY
+  }
+  const onWheelTouchEnd = (e: TouchEvent) => {
+    if (swipeY.current == null) return
+    const dy = e.changedTouches[0].clientY - swipeY.current
+    swipeY.current = null
+    if (Math.abs(dy) < 30) return
+    setIndex(Math.max(0, Math.min(mainMenu.length - 1, index + (dy < 0 ? 1 : -1))))
+  }
 
   // phones: a clean upright list, nothing pre-selected, a tap goes straight through
   if (isMobile) {
@@ -287,7 +308,7 @@ export function MainMenu() {
 
   return (
     <motion.div
-      className={`menu ${isMobile ? 'menu--mobile' : ''}`}
+      className="menu"
       style={{ '--paint': paint } as CSSProperties}
       initial={reducedMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -304,14 +325,19 @@ export function MainMenu() {
       <div className="menu__grain" aria-hidden="true" />
 
       {/* ── the wheel of words, in design space ─────────────────────────── */}
-      <nav
+      <motion.nav
         ref={wheelRef}
         className="menu__wheel"
         aria-label="Main menu"
         style={wheelStyle}
+        initial={false}
+        animate={{ x: cover.ox, y: panY, scale: cover.s }}
+        transition={{ duration: reducedMotion ? 0 : 0.42, ease }}
         onPointerMove={onWheelMove}
         onPointerLeave={() => wheelRef.current?.removeAttribute('data-cursor')}
         onClick={onWheelClick}
+        onTouchStart={sideways ? onWheelTouchStart : undefined}
+        onTouchEnd={sideways ? onWheelTouchEnd : undefined}
       >
         {/* selection stroke: a wide brush from the left edge past the word */}
         <AnimatePresence initial={false}>
@@ -388,7 +414,7 @@ export function MainMenu() {
             </motion.button>
           )
         })}
-      </nav>
+      </motion.nav>
 
       {/* ── corner: giant slot number + vertical name ("3 / COMMAND") ──── */}
       <div className="menu__corner" aria-hidden="true">
@@ -417,13 +443,17 @@ export function MainMenu() {
           </motion.div>
         </AnimatePresence>
         <div className="mbrief__keys">
-          <Hints
-            hints={[
-              { key: '↕', label: 'Move' },
-              { key: '↵', label: 'Confirm' },
-              { key: '⌫', label: 'Title' },
-            ]}
-          />
+          {isTouch ? (
+            <BackButton label="Title" onClick={toTitle} />
+          ) : (
+            <Hints
+              hints={[
+                { key: '↕', label: 'Move' },
+                { key: '↵', label: 'Confirm' },
+                { key: '⌫', label: 'Title' },
+              ]}
+            />
+          )}
         </div>
       </aside>
     </motion.div>

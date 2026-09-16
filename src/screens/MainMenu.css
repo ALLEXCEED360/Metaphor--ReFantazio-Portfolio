@@ -334,3 +334,31 @@
     bottom: calc(var(--safe-bottom) + 4px);
   }
 }
+
+/* a phone on its side: the desktop wheel, with the brief panel kept small */
+@media (max-height: 500px) and (orientation: landscape) {
+  .menu__brief {
+    width: clamp(220px, 30vw, 300px);
+    bottom: calc(var(--safe-bottom) + 8px);
+  }
+  .mbrief {
+    padding: 10px 14px 8px 16px;
+    gap: 4px;
+  }
+  .mbrief__title {
+    font-size: 1.1rem;
+  }
+  .mbrief__line {
+    font-size: 0.78rem;
+  }
+  .mbrief__keys {
+    padding: 6px 8px 8px 16px;
+  }
+  .mbrief__keys .backbtn {
+    padding: 5px 12px 5px 9px;
+    font-size: 0.72rem;
+  }
+  .menu__num {
+    font-size: 22vh;
+  }
+}
