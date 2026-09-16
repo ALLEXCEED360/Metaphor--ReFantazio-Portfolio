@@ -84,9 +84,10 @@ interface Placed {
   size: number
 }
 
-/* a phone on its side: the same words on an evenly spaced, gently tilted
-   line — the game's tight bottom fan is too cramped for a thumb */
-const SIDE: Neutral[] = NEUTRAL.map((n, i) => ({ x: 700 + i * 24, y: 150 + i * 138, r: 7 - i * 1.6, s: n.s, cap: n.cap }))
+/* a phone on its side: the same words on an evenly spaced, near-vertical
+   line that stays on the left — the game's fan drifts to the centre, out of
+   the thumb's easy reach */
+const SIDE: Neutral[] = NEUTRAL.map((n, i) => ({ x: 660 + i * 6, y: 150 + i * 138, r: 5 - i * 1.2, s: n.s, cap: n.cap }))
 
 /* the arc through the anchors, extended half a step past the top and barely
    past the bottom so the first and last words rest where the game puts them */
@@ -326,14 +327,11 @@ export function MainMenu() {
       {!sideways && <div className="menu__grain" aria-hidden="true" />}
 
       {/* ── the wheel of words, in design space ─────────────────────────── */}
-      <motion.nav
+      <nav
         ref={wheelRef}
         className="menu__wheel"
         aria-label="Main menu"
-        style={wheelStyle}
-        initial={false}
-        animate={{ x: cover.ox, y: panY, scale: cover.s }}
-        transition={{ duration: reducedMotion ? 0 : 0.42, ease }}
+        style={{ ...wheelStyle, transform: `translate(${cover.ox}px, ${panY}px) scale(${cover.s})`, transitionDuration: reducedMotion ? '0s' : undefined }}
         onPointerMove={onWheelMove}
         onPointerLeave={() => wheelRef.current?.removeAttribute('data-cursor')}
         onClick={onWheelClick}
@@ -377,48 +375,50 @@ export function MainMenu() {
           const isActive = i === active
           const letters = [...m.label.toUpperCase()]
           return (
-            <motion.button
+            <motion.div
               key={m.id}
-              className={`wheel__item ${isActive ? 'is-active' : ''}`}
-              style={{ left: p.x, top: p.y }}
-              initial={
-                reducedMotion || !first.current
-                  ? false
-                  : { opacity: 0, x: '-130%', y: '-72%', rotate: p.angle, fontSize: p.size }
-              }
-              animate={{ opacity: 1, x: '-100%', y: '-72%', rotate: p.angle, fontSize: p.size }}
+              className={`wheel__slot ${isActive ? 'is-active' : ''}`}
+              initial={reducedMotion || !first.current || sideways ? false : { opacity: 0, x: p.x - 90, y: p.y, rotate: p.angle }}
+              animate={{ opacity: 1, x: p.x, y: p.y, rotate: p.angle }}
               transition={{ duration: reducedMotion || sideways ? 0 : 0.42, delay: first.current && !sideways ? 0.04 * i : 0, ease }}
-              onFocus={() => setIndex(i)}
-              onClick={(e) => {
-                // keyboard activation; mouse clicks are handled by the wheel
-                e.stopPropagation()
-                setIndex(i)
-                go(m.path, { word: m.label })
-              }}
-              aria-current={isActive ? 'true' : undefined}
-              aria-label={m.label}
             >
-              <span className="wheel__word" aria-hidden="true">
-                {letters.map((ch, k) => (
-                  <span key={k} style={{ fontSize: `${letterScale(k, letters.length, NEUTRAL[i].cap)}em` }}>
-                    {ch}
-                  </span>
-                ))}
-              </span>
-              {isActive && (
-                <motion.span
-                  className="wheel__hint"
-                  initial={reducedMotion ? false : { opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.14, duration: 0.3 }}
-                >
-                  {m.hint}
-                </motion.span>
-              )}
-            </motion.button>
+              <motion.button
+                className="wheel__item"
+                initial={false}
+                animate={{ fontSize: p.size }}
+                transition={{ duration: reducedMotion || sideways ? 0 : 0.42, ease }}
+                onFocus={() => setIndex(i)}
+                onClick={(e) => {
+                  // keyboard activation; mouse clicks are handled by the wheel
+                  e.stopPropagation()
+                  setIndex(i)
+                  go(m.path, { word: m.label })
+                }}
+                aria-current={isActive ? 'true' : undefined}
+                aria-label={m.label}
+              >
+                <span className="wheel__word" aria-hidden="true">
+                  {letters.map((ch, k) => (
+                    <span key={k} style={{ fontSize: `${letterScale(k, letters.length, NEUTRAL[i].cap)}em` }}>
+                      {ch}
+                    </span>
+                  ))}
+                </span>
+                {isActive && (
+                  <motion.span
+                    className="wheel__hint"
+                    initial={reducedMotion ? false : { opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.14, duration: 0.3 }}
+                  >
+                    {m.hint}
+                  </motion.span>
+                )}
+              </motion.button>
+            </motion.div>
           )
         })}
-      </motion.nav>
+      </nav>
 
       {/* ── corner: giant slot number + vertical name ("3 / COMMAND") ──── */}
       <div className="menu__corner" aria-hidden="true">

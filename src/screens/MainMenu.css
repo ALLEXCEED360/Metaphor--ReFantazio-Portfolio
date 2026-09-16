@@ -46,6 +46,8 @@
   left: 0;
   top: 0;
   transform-origin: 0 0;
+  /* the pan (phones) and any resize glide on the compositor */
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .wheel__splat {
@@ -62,12 +64,28 @@
   overflow: visible;
 }
 
+/* each word rides in a zero-size slot moved by transform alone, so a step
+   never re-lays out its neighbours; the slot's origin is the word's anchor */
+.wheel__slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 2;
+  transform-origin: 0 0;
+}
+.wheel__slot.is-active {
+  z-index: 3;
+}
 .wheel__item {
   position: absolute;
-  z-index: 2;
+  left: 0;
+  top: 0;
+  /* right end of the baseline sits on the slot's origin */
+  transform: translate(-100%, -72%);
   /* the wheel hit-tests the mouse itself; the boxes only serve keyboard focus */
   pointer-events: none;
-  transform-origin: 100% 72%;
   /* fat-face: heavy stems, hairline serifs — the game's lettering */
   font-family: var(--font-display);
   font-weight: 900;
@@ -96,8 +114,7 @@
   display: inline-block;
   line-height: 0.78;
 }
-.wheel__item.is-active {
-  z-index: 3;
+.wheel__slot.is-active .wheel__item {
   color: var(--ink);
   text-shadow: 0.045em 0.045em 0 var(--cream);
 }
@@ -339,6 +356,12 @@
 @media (max-height: 500px) and (orientation: landscape) {
   .menu__wheel {
     will-change: transform;
+  }
+  .wheel__slot {
+    will-change: transform;
+  }
+  .menu__num {
+    filter: none;
   }
   .menu__brief {
     width: clamp(220px, 30vw, 300px);
