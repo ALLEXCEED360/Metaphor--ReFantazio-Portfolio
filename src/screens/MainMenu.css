@@ -65,6 +65,8 @@
 .wheel__item {
   position: absolute;
   z-index: 2;
+  /* the wheel hit-tests the mouse itself; the boxes only serve keyboard focus */
+  pointer-events: none;
   transform-origin: 100% 72%;
   /* fat-face: heavy stems, hairline serifs — the game's lettering */
   font-family: var(--font-display);

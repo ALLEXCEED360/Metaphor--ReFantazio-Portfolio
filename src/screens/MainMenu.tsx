@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Hints, BackButton } from '../components/ui'
 import { useNav } from '../app/router'
@@ -32,44 +32,40 @@ const briefs: Record<string, string> = {
 const ease = [0.16, 1, 0.3, 1] as const
 
 /* ─────────────────────────────────────────────────────────
-   Layout fitted to two measured states of the game's menu (SKILL selected /
-   SYSTEM selected). Each word has a neutral right-end anchor + rotation in a
-   1920×1080 design space; every word on the far side of the selection is
-   pushed ~70px away (and fans a little more), and the selected word grows
-   1.45× while drifting toward the vertical centre. The design space is
-   scaled exactly like `background-size: cover`, so it stays registered to
-   the backdrop plate.
+   Layout traced from the game's menu: the nine words sit along one arc that
+   runs from the top-left down to the bottom-right (right ends anchored, the
+   tilt easing from +12° to −16°). Each word owns a share of that arc in
+   proportion to its letter size; the selected word's share grows with it, so
+   its neighbours slide along the arc just far enough to make room and the
+   column keeps its rhythm whatever is chosen. The design space is scaled
+   like `background-size: cover`, so it stays registered to the plate.
    ───────────────────────────────────────────────────────── */
 
 const DESIGN = { w: 1920, h: 1080 }
-const SELECT_SCALE = 1.35
-const PUSH = 54
-const CENTRE_Y = 560
+const SELECT_SCALE = 1.4
+/** extra arc after the chosen word, relative to its grown size: room for its hint line */
+const SELECT_ROOM = 0.22
 
 interface Neutral {
   x: number // right-end anchor
   y: number
   r: number // rotation (deg, clockwise positive)
-  d: number // extra fan rotation when pushed
   s: number // letter size (design px)
   cap: number // drop-cap multiplier
 }
 
-/*                 x     y    rot   fan  size  cap        game word  */
+/*                 x     y    rot  size  cap        game word  */
 const NEUTRAL: Neutral[] = [
-  { x: 670, y: 205, r: 12, d: 2, s: 104, cap: 1.5 }, // SKILL
-  { x: 610, y: 315, r: 10, d: 2, s: 105, cap: 1.5 }, // ITEM
-  { x: 650, y: 432, r: 8, d: 2, s: 121, cap: 2.2 }, // EQUIPMENT
-  { x: 675, y: 552, r: 4, d: 2, s: 117, cap: 1.6 }, // PARTY
-  { x: 655, y: 668, r: -3, d: 2, s: 121, cap: 2.1 }, // FOLLOWER
-  { x: 640, y: 762, r: -7, d: 2, s: 100, cap: 1.5 }, // QUEST
-  { x: 770, y: 832, r: -10, d: 2, s: 107, cap: 1.7 }, // CALENDAR
-  { x: 890, y: 896, r: -13, d: 2, s: 88, cap: 1.4 }, // MEMORANDUM
-  { x: 1010, y: 955, r: -16, d: 2, s: 94, cap: 1.5 }, // SYSTEM
+  { x: 670, y: 205, r: 12, s: 104, cap: 1.5 }, // SKILL
+  { x: 610, y: 315, r: 10, s: 105, cap: 1.5 }, // ITEM
+  { x: 650, y: 432, r: 8, s: 121, cap: 2.2 }, // EQUIPMENT
+  { x: 675, y: 552, r: 4, s: 117, cap: 1.6 }, // PARTY
+  { x: 655, y: 668, r: -3, s: 121, cap: 2.1 }, // FOLLOWER
+  { x: 640, y: 762, r: -7, s: 100, cap: 1.5 }, // QUEST
+  { x: 770, y: 832, r: -10, s: 107, cap: 1.7 }, // CALENDAR
+  { x: 890, y: 896, r: -13, s: 88, cap: 1.4 }, // MEMORANDUM
+  { x: 1010, y: 955, r: -16, s: 94, cap: 1.5 }, // SYSTEM
 ]
-/** keep the first / last word fully on screen whatever is selected */
-const CLAMP_TOP = 200
-const CLAMP_BOTTOM = 958
 
 /** the game's splat colour for each row: purple → pink → red → … → teal */
 const PAINT = ['#b94abb', '#d84291', '#f14352', '#eb523d', '#ea6c1b', '#d4a900', '#a8a800', '#0c8e5e', '#3a96aa']
@@ -88,40 +84,73 @@ interface Placed {
   size: number
 }
 
+/* the arc: the neutral anchors, extended half a step past each end so the
+   first and last words rest where the game puts them */
+const ARC = (() => {
+  const n = NEUTRAL.length
+  const ext = (a: Neutral, b: Neutral, k: number) => ({ x: a.x + (a.x - b.x) * k, y: a.y + (a.y - b.y) * k, r: a.r + (a.r - b.r) * k })
+  // the bottom end barely extends: the last word must stay clear of the frame edge
+  const pts = [ext(NEUTRAL[0], NEUTRAL[1], 0.5), ...NEUTRAL.map(({ x, y, r }) => ({ x, y, r })), ext(NEUTRAL[n - 1], NEUTRAL[n - 2], 0.12)]
+  const len = [0]
+  for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y))
+  return { pts, len, total: len[len.length - 1] }
+})()
+
+/** point on the arc at distance d from its top */
+function alongArc(d: number) {
+  const { pts, len } = ARC
+  let i = 1
+  while (i < len.length - 1 && len[i] < d) i++
+  const t = (d - len[i - 1]) / Math.max(1, len[i] - len[i - 1])
+  const a = pts[i - 1]
+  const b = pts[i]
+  return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, r: a.r + (b.r - a.r) * t }
+}
+
 function layout(active: number): Placed[] {
-  // the bottom fan is packed tight, so a selection there shoves its neighbours further
-  const pushUp = active >= 7 ? PUSH + 70 : active >= 5 ? PUSH + 35 : PUSH
-  const pushDown = active <= 1 ? PUSH + 20 : PUSH
-  const placed = NEUTRAL.map((n, i) => {
-    if (i === active) {
-      return {
-        x: n.x + (i >= 7 ? 60 : i >= 5 ? 25 : 0),
-        y: n.y + (CENTRE_Y - n.y) * 0.2,
-        angle: n.r + 6,
-        size: n.s * SELECT_SCALE,
-      }
-    }
-    const below = i > active
-    return {
-      x: n.x,
-      y: n.y + (below ? pushDown : -pushUp),
-      angle: n.r + (below ? -n.d : n.d),
-      size: n.s,
-    }
+  const sizes = NEUTRAL.map((n, i) => (i === active ? n.s * SELECT_SCALE : n.s))
+  const shares = sizes.map((s, i) => (i === active ? s * (1 + SELECT_ROOM) : s))
+  const sum = shares.reduce((a, b) => a + b, 0)
+  let acc = 0
+  return NEUTRAL.map((_, i) => {
+    // the word sits at the centre of its own height; the extra room trails after it
+    const centre = ((acc + sizes[i] / 2) / sum) * ARC.total
+    acc += shares[i]
+    const p = alongArc(centre)
+    return { x: p.x, y: p.y, angle: p.r, size: sizes[i] }
   })
-  // squeeze the ends back inside the frame instead of letting them clip
-  const top = placed[0].y
-  if (top < CLAMP_TOP) {
-    const k = (CLAMP_TOP - top) / Math.max(1, active)
-    for (let i = 0; i < active; i++) placed[i].y += k * (active - i)
+}
+
+/**
+ * Which word the mouse is over, by geometry rather than DOM boxes: the
+ * rotated, overlapping letter boxes make hover jumpy, and a word growing
+ * under the cursor would otherwise hand the hover to its neighbour. Each
+ * word is a rotated band running left from its anchor (the right end of the
+ * baseline); when bands overlap the one whose midline is nearest wins.
+ */
+function wordAt(x: number, y: number, placed: Placed[], active: number): number | null {
+  const inBand = (i: number, loose: number) => {
+    const p = placed[i]
+    const a = (-p.angle * Math.PI) / 180
+    const dx = x - p.x
+    const dy = y - p.y
+    // into the word's frame: lx runs along the baseline, ly up from it
+    const lx = dx * Math.cos(a) - dy * Math.sin(a)
+    const ly = dx * Math.sin(a) + dy * Math.cos(a)
+    const n = mainMenu[i].label.length
+    const width = p.size * (0.36 * (n - 1) + 0.45 * NEUTRAL[i].cap)
+    if (lx > 0.25 * p.size * loose || lx < -width - 0.2 * p.size * (loose - 1)) return null
+    if (ly > 0.22 * p.size * loose || ly < -0.85 * p.size * loose) return null
+    return Math.abs(ly + 0.32 * p.size)
   }
-  const last = NEUTRAL.length - 1
-  const bottom = placed[last].y
-  if (bottom > CLAMP_BOTTOM) {
-    const k = (bottom - CLAMP_BOTTOM) / Math.max(1, last - active)
-    for (let i = last; i > active; i--) placed[i].y -= k * (i - active)
+  let best: { i: number; off: number } | null = null
+  for (let i = 0; i < placed.length; i++) {
+    const off = inBand(i, 1)
+    if (off != null && (!best || off < best.off)) best = { i, off }
   }
-  return placed
+  if (best) return (best as { i: number }).i
+  // just off the letters of the chosen word (it grew under the cursor): keep it
+  return inBand(active, 1.6) != null ? active : null
 }
 
 /** phones: a plain tilted stack, right-aligned, in viewport px */
@@ -193,6 +222,28 @@ export function MainMenu() {
   const paint = PAINT[active]
   const placed = isMobile ? layoutMobile(active, window.innerWidth, window.innerHeight) : layout(active)
   const sel = placed[active]
+
+  // mouse: hit-test in design space over the whole wheel (see wordAt)
+  const wheelRef = useRef<HTMLElement>(null)
+  const under = (e: PointerEvent | MouseEvent) => {
+    const el = wheelRef.current
+    if (!el) return null
+    const r = el.getBoundingClientRect()
+    return wordAt((e.clientX - r.left) / cover.s, (e.clientY - r.top) / cover.s, placed, active)
+  }
+  const onWheelMove = (e: PointerEvent) => {
+    if (e.pointerType !== 'mouse') return
+    const i = under(e)
+    wheelRef.current?.toggleAttribute('data-cursor', i != null)
+    if (i != null) wheelRef.current?.setAttribute('data-cursor', 'interactive')
+    if (i != null && i !== index) setIndex(i)
+  }
+  const onWheelClick = (e: MouseEvent) => {
+    const i = under(e)
+    if (i == null) return
+    setIndex(i)
+    go(mainMenu[i].path, { word: mainMenu[i].label })
+  }
   const wheelStyle = isMobile
     ? { width: '100%', height: '100%' }
     : { width: DESIGN.w, height: DESIGN.h, transform: `translate(${cover.ox}px, ${cover.oy}px) scale(${cover.s})` }
@@ -254,9 +305,13 @@ export function MainMenu() {
 
       {/* ── the wheel of words, in design space ─────────────────────────── */}
       <nav
+        ref={wheelRef}
         className="menu__wheel"
         aria-label="Main menu"
         style={wheelStyle}
+        onPointerMove={onWheelMove}
+        onPointerLeave={() => wheelRef.current?.removeAttribute('data-cursor')}
+        onClick={onWheelClick}
       >
         {/* selection stroke: a wide brush from the left edge past the word */}
         <AnimatePresence initial={false}>
@@ -303,9 +358,10 @@ export function MainMenu() {
               }
               animate={{ opacity: 1, x: '-100%', y: '-72%', rotate: p.angle, fontSize: p.size }}
               transition={{ duration: reducedMotion ? 0 : 0.42, delay: first.current ? 0.04 * i : 0, ease }}
-              onPointerMove={(e) => e.pointerType === 'mouse' && setIndex(i)}
               onFocus={() => setIndex(i)}
-              onClick={() => {
+              onClick={(e) => {
+                // keyboard activation; mouse clicks are handled by the wheel
+                e.stopPropagation()
                 setIndex(i)
                 go(m.path, { word: m.label })
               }}
