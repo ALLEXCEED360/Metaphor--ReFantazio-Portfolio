@@ -322,7 +322,8 @@ export function MainMenu() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, ease }}
       />
-      <div className="menu__grain" aria-hidden="true" />
+      {/* the blended grain forces a full-screen recomposite every frame the wheel pans */}
+      {!sideways && <div className="menu__grain" aria-hidden="true" />}
 
       {/* ── the wheel of words, in design space ─────────────────────────── */}
       <motion.nav
@@ -351,13 +352,16 @@ export function MainMenu() {
             transition={{ duration: 0.32, ease }}
           >
             <svg viewBox="0 0 2400 200" preserveAspectRatio="none" aria-hidden="true">
-              <defs>
-                <filter id="stroke-rough" x="-5%" y="-40%" width="110%" height="180%">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.006 0.05" numOctaves="3" seed={active + 3} result="t" />
-                  <feDisplacementMap in="SourceGraphic" in2="t" scale="46" xChannelSelector="R" yChannelSelector="G" />
-                </filter>
-              </defs>
-              <g filter="url(#stroke-rough)" fill="var(--paint)">
+              {/* the roughened edge is a live SVG filter over a 2400px brush: too much for a phone GPU while the wheel moves */}
+              {!isTouch && (
+                <defs>
+                  <filter id="stroke-rough" x="-5%" y="-40%" width="110%" height="180%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.05" numOctaves="3" seed={active + 3} result="t" />
+                    <feDisplacementMap in="SourceGraphic" in2="t" scale="46" xChannelSelector="R" yChannelSelector="G" />
+                  </filter>
+                </defs>
+              )}
+              <g filter={isTouch ? undefined : 'url(#stroke-rough)'} fill="var(--paint)">
                 <path d="M-100 40 C 500 10, 1300 30, 2200 60 L 2330 92 C 2360 120, 2300 160, 2180 158 C 1500 190, 600 180, -100 150 Z" />
                 <ellipse cx="2280" cy="34" rx="34" ry="16" />
                 <ellipse cx="2350" cy="150" rx="26" ry="12" />
@@ -383,7 +387,7 @@ export function MainMenu() {
                   : { opacity: 0, x: '-130%', y: '-72%', rotate: p.angle, fontSize: p.size }
               }
               animate={{ opacity: 1, x: '-100%', y: '-72%', rotate: p.angle, fontSize: p.size }}
-              transition={{ duration: reducedMotion ? 0 : 0.42, delay: first.current ? 0.04 * i : 0, ease }}
+              transition={{ duration: reducedMotion || sideways ? 0 : 0.42, delay: first.current && !sideways ? 0.04 * i : 0, ease }}
               onFocus={() => setIndex(i)}
               onClick={(e) => {
                 // keyboard activation; mouse clicks are handled by the wheel
