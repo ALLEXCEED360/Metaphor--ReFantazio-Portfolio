@@ -1,0 +1,13 @@
+Copyright (c) 2026 Fardeen Alam. All rights reserved.
+
+The source code in this repository is published so that it can be read and
+studied. No other rights are granted. You may not copy, modify, redistribute,
+sublicense, relicense, deploy, or present this code or its design as your own,
+in whole or in part, without the author's prior written permission.
+
+The artwork, video, and music under public/art, public/video, and public/music
+are the property of ATLUS / SEGA (Metaphor: ReFantazio) and are used here for a
+personal, non-commercial portfolio only. They are not covered by this notice and
+are not the author's to license.
+
+Third-party dependencies listed in package.json remain under their own licences.

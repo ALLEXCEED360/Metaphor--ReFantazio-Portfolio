@@ -22,3 +22,7 @@ npm run dev
 ```
 
 `npm run build` outputs to `dist/`; the site deploys on Vercel from `main`.
+
+## Licence
+
+All rights reserved — see [LICENSE](LICENSE). Artwork and music are © ATLUS / SEGA.
