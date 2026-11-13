@@ -155,7 +155,7 @@ export function Chronicle() {
                 Record {num} · {kindLabel[e.kind]} · {e.location}
               </span>
 
-              <h2 className="dos__role t-hero">
+              <h2 className={`dos__role t-hero ${e.role.length > 18 ? 'is-long' : ''}`}>
                 <span className="dos__role-splat" aria-hidden="true">
                   <Splat color={e.paint} seed={index + 4} />
                   <Splat color={e.paint} seed={index + 9} className="splat--second" />

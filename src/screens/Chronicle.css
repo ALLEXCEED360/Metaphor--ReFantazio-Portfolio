@@ -187,6 +187,15 @@
   white-space: normal;
   transform: none;
 }
+/* a long title would run to three lines and push out of the centred column */
+.dos__role.is-long {
+  font-size: clamp(28px, 4.6vh, 58px);
+}
+/* the stroke is sized to the unscaled box, so a long title needs more of it */
+.dos__role.is-long .dos__role-splat .splat {
+  inset: -22% -10% -24% -6%;
+  width: 118%;
+}
 .dos__role-text {
   position: relative;
   z-index: 1;
@@ -327,10 +336,10 @@
     height: auto;
     gap: 2.4vh;
   }
-  /* the index becomes a strip of five equal tabs */
+  /* the index becomes a strip of equal tabs, wrapping past three */
   .ch__index {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
     border-right: 0;
     padding: 0 0 1.6vh;

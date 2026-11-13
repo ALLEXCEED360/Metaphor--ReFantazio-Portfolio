@@ -227,6 +227,28 @@ export const journey: Milestone[] = [
     ],
   },
   {
+    id: 'imprint',
+    art: 14,
+    paint: '#0c8e5e',
+    year: '2026',
+    chapter: 'Operations',
+    title: 'Imprint',
+    subtitle: 'Production → HR → Supply Chain & Procurement',
+    weight: 'major',
+    tags: ['work'],
+    summary:
+      'Three roles in seven months at a custom promotional products manufacturer, held alongside game development at Cloudy Games: the production floor from April, two weeks in HR in October, then supply chain and procurement.',
+    meta: [{ label: 'Since', value: 'April 2026' }],
+    sections: [
+      { label: 'Progression', steps: ['Production Assistant', 'HR Assistant', 'Supply Chain & Procurement'] },
+      { label: 'Worked on', items: ['Production orders', 'Quality checks', 'Onboarding & records', 'Purchase orders', 'Supplier coordination', 'Inventory'] },
+      {
+        label: 'The Chapter',
+        text: 'A different kind of engineering problem: a factory floor, and then the systems that keep it supplied. Learning an operation from the inside out, one department at a time.',
+      },
+    ],
+  },
+  {
     id: 'independent',
     art: 6,
     paint: '#b94abb',
